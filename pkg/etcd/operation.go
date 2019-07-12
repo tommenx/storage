@@ -2,18 +2,21 @@ package etcd
 
 import (
 	"context"
-	"fmt"
 	"github.com/golang/glog"
 	v3 "go.etcd.io/etcd/clientv3"
 	"strings"
 	"time"
 )
 
+// /storage/nodes/node-name
+// /storage/pods/ns/pod-name
+// /storage/pvcs/ns/pvc-name
 var (
 	DefaultTimeout = 5 * time.Second
 	prefix         = "/storage/"
 	prefixNode     = prefix + "nodes/"
 	prefixPod      = prefix + "pods/"
+	prefixPVC      = prefix + "pvcs/"
 )
 
 type EtcdHandler struct {
@@ -21,9 +24,15 @@ type EtcdHandler struct {
 }
 
 type EtcdInterface interface {
+	PutNode(ctx context.Context, node string, val []byte) error
+	GetNodeList(ctx context.Context) (map[string][]byte, error)
+	PutPVC(ctx context.Context, ns, pvc string, val []byte) error
+	GetPVC(ctx context.Context, ns, pvc string) ([]byte, error)
+	PutPod(ctx context.Context, ns, name string, val []byte) error
+	GetPod(ctx context.Context, ns, name string) ([]byte, error)
 }
 
-func NewEtcd(endpoints []string) *EtcdHandler {
+func NewEtcd(endpoints []string) EtcdInterface {
 	cli, err := v3.New(v3.Config{
 		Endpoints:   endpoints,
 		DialTimeout: DefaultTimeout,
@@ -65,7 +74,7 @@ func (h *EtcdHandler) Get(ctx context.Context, key string, prefix bool) (map[str
 }
 
 func (h *EtcdHandler) PutNode(ctx context.Context, node string, val []byte) error {
-	key := getNodeKey(node)
+	key := getKey(prefixNode, node)
 	return h.Put(ctx, key, val)
 
 }
@@ -84,13 +93,13 @@ func (h *EtcdHandler) GetNodeList(ctx context.Context) (map[string][]byte, error
 	return res, nil
 }
 
-func (h *EtcdHandler) PutPod(ctx context.Context, ns, name string, val []byte) error {
-	key := getPodKey(ns, name)
+func (h *EtcdHandler) PutPVC(ctx context.Context, ns, pvc string, val []byte) error {
+	key := getKey(prefixPVC, ns, pvc)
 	return h.Put(ctx, key, val)
 }
 
-func (h *EtcdHandler) GetPod(ctx context.Context, ns, name string) ([]byte, error) {
-	key := getPodKey(ns, name)
+func (h *EtcdHandler) GetPVC(ctx context.Context, ns, pvc string) ([]byte, error) {
+	key := getKey(prefixPVC)
 	kvs, err := h.Get(ctx, key, false)
 	if err != nil {
 		return nil, err
@@ -98,11 +107,26 @@ func (h *EtcdHandler) GetPod(ctx context.Context, ns, name string) ([]byte, erro
 	return kvs[key], nil
 }
 
-func getPodKey(ns, name string) string {
-	key := fmt.Sprintf("%s/%s/%s", prefixPod, ns, name)
-	return key
+func (h *EtcdHandler) PutPod(ctx context.Context, ns, name string, val []byte) error {
+	key := getKey(prefixNode, ns, name)
+	return h.Put(ctx, key, val)
 }
 
-func getNodeKey(node string) string {
-	return prefixNode + node
+func (h *EtcdHandler) GetPod(ctx context.Context, ns, name string) ([]byte, error) {
+	key := getKey(prefixPod, ns, name)
+	kvs, err := h.Get(ctx, key, false)
+	if err != nil {
+		return nil, err
+	}
+	return kvs[key], nil
+}
+
+func getKey(prefix string, args ...string) string {
+	for i, arg := range args {
+		prefix += arg
+		if i < len(args)-1 {
+			prefix += "/"
+		}
+	}
+	return prefix
 }

@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"github.com/golang/glog"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/util/wait"
@@ -27,8 +26,10 @@ func NewController(kubeCli kubernetes.Interface, informerFactory informers.Share
 		queue:      workqueue.NewRateLimitingQueue(workqueue.DefaultControllerRateLimiter()),
 	}
 	podInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
-		AddFunc:    c.addPod,
-		UpdateFunc: c.updatePod,
+		AddFunc: c.addPod,
+		UpdateFunc: func(old, cur interface{}) {
+			c.updatePod(old, cur)
+		},
 		DeleteFunc: c.deletePod,
 	})
 	c.podLister = podInformer.Lister()
@@ -42,11 +43,13 @@ func (c *Controller) Run(workers int, stopCh <-chan struct{}) {
 	defer glog.Info("shutdown pod controller")
 	//sync with pod
 	if !cache.WaitForCacheSync(stopCh, c.podListerSynced) {
+		glog.Info("sync pod failed")
 		return
 	}
 	for i := 0; i < workers; i++ {
 		go wait.Until(c.worker, time.Second, stopCh)
 	}
+	<-stopCh
 }
 
 func (c *Controller) worker() {
@@ -54,14 +57,15 @@ func (c *Controller) worker() {
 	}
 }
 
+//TODO
+//需要判断不同的错误的类型，从而判断是否需要再次加进限速队列中
 func (c *Controller) processNextWrokItem() bool {
 	key, quit := c.queue.Get()
 	if quit {
 		return false
 	}
+	defer c.queue.Done(key)
 	if err := c.sync(key.(string)); err != nil {
-		c.queue.AddRateLimited(key)
-	} else {
 		c.queue.Forget(key)
 	}
 	return true
@@ -73,13 +77,18 @@ func (c *Controller) sync(key string) error {
 		return err
 	}
 	pod, err := c.podLister.Pods(ns).Get(name)
-	fmt.Printf("pod is %+v", *pod)
+	if err != nil {
+		glog.Errorf("get pod error, name=%s, err=%+v", name, err)
+		return err
+	}
+	glog.Infof("%+v", pod)
+
 	return nil
 }
 
 func (c *Controller) checkResolve(pod *corev1.Pod) bool {
 	annotations := pod.GetAnnotations()
-	if status := annotations["scale.io/enable"]; status == "enable" {
+	if status := annotations["scale.io/storage"]; status == "enable" {
 		return true
 	}
 	return false
@@ -95,6 +104,7 @@ func (c *Controller) addPod(obj interface{}) {
 }
 
 func (c *Controller) deletePod(obj interface{}) {
+	glog.Info("detect delete pod")
 	pod, ok := obj.(*corev1.Pod)
 	if !ok {
 		tombstone, ok := obj.(cache.DeletedFinalStateUnknown)
@@ -114,6 +124,7 @@ func (c *Controller) deletePod(obj interface{}) {
 }
 
 func (c *Controller) updatePod(old, cur interface{}) {
+	glog.Info("detect update pod")
 	curPod := cur.(*corev1.Pod)
 	oldPod := old.(*corev1.Pod)
 	if curPod.ResourceVersion == oldPod.ResourceVersion {

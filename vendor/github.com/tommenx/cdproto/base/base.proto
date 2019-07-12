@@ -1,0 +1,12 @@
+syntax = "proto3";
+package base;
+
+option go_package="github.com/tommenx/cdproto/base";
+
+message BaseResp {
+    int32 code = 1;
+    string message = 2;
+}
+
+message Base {
+}

@@ -30,8 +30,6 @@ func main() {
 	informerFactory := informers.NewSharedInformerFactory(clienset, time.Second*30)
 	controller := controller.NewController(clienset, informerFactory)
 	stop := make(chan struct{})
-	defer close(stop)
 	go informerFactory.Start(stop)
 	controller.Run(5, stop)
-	select {}
 }

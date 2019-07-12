@@ -143,6 +143,17 @@
   version = "v1.0.1"
 
 [[projects]]
+  branch = "master"
+  digest = "1:c189eb6948718445bd940ca558d8ad31ec00d8e1676a23356b9542d1a701feee"
+  name = "github.com/tommenx/cdproto"
+  packages = [
+    "base",
+    "cdpb",
+  ]
+  pruneopts = "UT"
+  revision = "d22aeaeb308fd8a8b3a3d43ec678f7bae9a0fac1"
+
+[[projects]]
   digest = "1:762df97c14bc6eaa5a01a4dcf50820428ae495e020f3ba80762f217889de302c"
   name = "go.etcd.io/etcd"
   packages = ["clientv3"]
@@ -228,14 +239,6 @@
   revision = "f51c12702a4d"
 
 [[projects]]
-  branch = "master"
-  digest = "1:8267bfcee2b8e2996f87ecc7a96912b24158cc361759ba367b17766a6547d2de"
-  name = "golang.org/x/tools"
-  packages = ["go/ssa/interp/testdata/src/fmt"]
-  pruneopts = "UT"
-  revision = "c8855242db9c1762032abe33c2dff50de3ec9d05"
-
-[[projects]]
   digest = "1:6eb6e3b6d9fffb62958cf7f7d88dbbe1dd6839436b0802e194c590667a40412a"
   name = "google.golang.org/appengine"
   packages = [
@@ -260,31 +263,47 @@
   revision = "3bdd9d9f5532d75d09efb230bd767d265245cfe5"
 
 [[projects]]
-  digest = "1:45101b53b1b93d50e2464e3b164bfa72cc77229fb998cfcd029987006488c641"
+  digest = "1:931727c62baa7a9958acac5d712ae9cc0ea3ff86a664b560febf4f4b0677ee28"
   name = "google.golang.org/grpc"
   packages = [
     ".",
     "balancer",
+    "balancer/base",
+    "balancer/roundrobin",
+    "binarylog/grpc_binarylog_v1",
     "codes",
     "connectivity",
     "credentials",
-    "grpclb/grpc_lb_v1/messages",
+    "credentials/internal",
+    "encoding",
+    "encoding/proto",
     "grpclog",
     "health/grpc_health_v1",
     "internal",
+    "internal/backoff",
+    "internal/balancerload",
+    "internal/binarylog",
+    "internal/channelz",
+    "internal/envconfig",
+    "internal/grpcrand",
+    "internal/grpcsync",
+    "internal/syscall",
+    "internal/transport",
     "keepalive",
     "metadata",
     "naming",
     "peer",
     "resolver",
+    "resolver/dns",
+    "resolver/passthrough",
+    "serviceconfig",
     "stats",
     "status",
     "tap",
-    "transport",
   ]
   pruneopts = "UT"
-  revision = "5b3c4e850e90a4cf6a20ebd46c8b32a0a3afcb9e"
-  version = "v1.7.5"
+  revision = "1d89a3c832915b2314551c1d2a506874d62e53f7"
+  version = "v1.22.0"
 
 [[projects]]
   digest = "1:2d1fbdc6777e5408cabeb02bf336305e724b925ff4546ded0fa8715a7267922a"
@@ -581,9 +600,12 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/gogo/protobuf/proto",
     "github.com/golang/glog",
+    "github.com/tommenx/cdproto/base",
+    "github.com/tommenx/cdproto/cdpb",
     "go.etcd.io/etcd/clientv3",
-    "golang.org/x/tools/go/ssa/interp/testdata/src/fmt",
+    "google.golang.org/grpc",
     "k8s.io/api/core/v1",
     "k8s.io/apimachinery/pkg/util/wait",
     "k8s.io/client-go/informers",

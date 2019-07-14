@@ -101,7 +101,7 @@ func (h *EtcdHandler) PutPVC(ctx context.Context, ns, pvc string, val []byte) er
 }
 
 func (h *EtcdHandler) GetPVC(ctx context.Context, ns, pvc string) ([]byte, error) {
-	key := getKey(prefixPVC)
+	key := getKey(prefixPVC, ns, pvc)
 	kvs, err := h.Get(ctx, key, false)
 	if err != nil {
 		return nil, err

@@ -55,7 +55,7 @@ func GetNodeStorage(ctx context.Context) (map[string]*cdpb.NodeStorage, error) {
 	return rsp.NodeMap, nil
 }
 
-func PutPodResource(ctx context.Context, name string, ns string, request map[string]int64) error {
+func PutPodResource(ctx context.Context, ns, name string, request map[string]int64) error {
 	req := &cdpb.PutPodResourceRequest{}
 	pod := &cdpb.PodResource{}
 	pod.Name = name
@@ -91,7 +91,7 @@ func GetPodResource(ctx context.Context, ns, name string) (*cdpb.PodResource, er
 	return rsp.Pod, nil
 }
 
-func PutVolume(ctx context.Context, volume *cdpb.Volume, ns, pvc string) error {
+func PutVolume(ctx context.Context, ns, pvc string, volume *cdpb.Volume) error {
 	req := &cdpb.PutVolumeRequest{
 		Base:      &base.Base{},
 		Volume:    volume,

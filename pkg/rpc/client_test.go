@@ -55,3 +55,46 @@ func TestGetNodeStorage(t *testing.T) {
 		}
 	}
 }
+
+func TestPutVolume(t *testing.T) {
+	Init(":50051")
+	err := PutVolume(context.Background(), "cc", "c", &cdpb.Volume{
+		Name:        "111",
+		VolumeGroup: "222",
+		Uuid:        "333",
+		Maj:         "444",
+	})
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestGetVolume(t *testing.T) {
+	Init(":50051")
+	volume, err := GetVolume(context.Background(), "cc", "c")
+	if err != nil {
+		t.Error(err)
+	}
+	t.Logf("%+v", *volume)
+}
+
+func TestPutPodResource(t *testing.T) {
+	Init(":50051")
+	err := PutPodResource(context.Background(), "ns1", "pod1", map[string]int64{
+		"122":  122,
+		"1233": 1233,
+		"222":  222,
+	})
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestGetPodResource(t *testing.T) {
+	Init(":50051")
+	pod, err := GetPodResource(context.Background(), "ns1", "pod1")
+	if err != nil {
+		t.Error(err)
+	}
+	t.Logf("%+v", *pod)
+}

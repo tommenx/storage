@@ -2,18 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="885a1334-0d6a-4990-81f4-35a5f62c0457" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/pkg/container/client.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Gopkg.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Gopkg.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/coordinator/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/coordinator/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Gopkg.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Gopkg.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main" beforeDir="false" afterPath="$PROJECT_DIR$/main" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/etcd/operation.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/store/operation.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/etcd/operation_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/store/operation_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/docker/client.go" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/pkg/rpc/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/rpc/client.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pkg/rpc/client_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/rpc/client_test.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pkg/server/handler.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/server/handler.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/server/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/server/server.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/github.com/tommenx/cdproto/cdpb/cdpb.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/tommenx/cdproto/cdpb/cdpb.pb.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/github.com/tommenx/cdproto/cdpb/cdpb.proto" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/tommenx/cdproto/cdpb/cdpb.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/store/operation.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/store/operation.go" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -24,39 +22,64 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pkg/server/handler.go">
+        <entry file="file://$PROJECT_DIR$/pkg/container/client.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-399">
-              <caret line="34" column="124" selection-start-line="34" selection-start-column="124" selection-end-line="34" selection-end-column="124" />
+            <state relative-caret-position="720">
+              <caret line="30" column="20" selection-start-line="30" selection-start-column="20" selection-end-line="30" selection-end-column="20" />
               <folding>
-                <element signature="e#16#167#0" expanded="true" />
-                <element signature="n#!!block;n#GetNodeStorage#0" />
-                <element signature="n#!!block;n#PutVolume#0" />
-                <element signature="n#!!block;n#GetVolume#0" />
+                <element signature="e#19#108#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/pkg/rpc/client.go">
+        <entry file="file://$PROJECT_DIR$/pkg/container/client_test.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1158">
-              <caret line="129" selection-start-line="129" selection-end-line="129" />
+            <state relative-caret-position="336">
+              <caret line="14" column="29" selection-start-line="14" selection-start-column="29" selection-end-line="14" selection-end-column="29" />
               <folding>
-                <element signature="n#!!block;n#PutNodeStorage#0" />
-                <element signature="n#!!block;n#GetNodeStorage#0" />
-                <element signature="n#!!block;n#GetPodResource#0" />
+                <element signature="e#19#51#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/vendor/github.com/tommenx/cdproto/cdpb/cdpb.pb.go">
+        <entry file="file://$PROJECT_DIR$/Gopkg.toml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="276">
-              <caret line="1016" column="4" selection-start-line="1016" selection-start-column="4" selection-end-line="1016" selection-end-column="4" />
+            <state relative-caret-position="480">
+              <caret line="44" column="26" selection-start-line="44" selection-start-column="26" selection-end-line="44" selection-end-column="26" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Gopkg.lock">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="397">
+              <caret line="276" column="23" selection-start-line="276" selection-start-column="18" selection-end-line="276" selection-end-column="23" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/vendor/github.com/docker/docker/client/client.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="269">
+              <caret line="118" column="5" selection-start-line="118" selection-start-column="5" selection-end-line="118" selection-end-column="5" />
+              <folding>
+                <element signature="e#982#1246#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/vendor/github.com/docker/docker/client/client_unix.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="120">
+              <caret line="5" column="6" selection-start-line="5" selection-start-column="6" selection-end-line="5" selection-end-column="6" />
             </state>
           </provider>
         </entry>
@@ -92,15 +115,17 @@
         <option value="$PROJECT_DIR$/proto/protocol/cdpb.proto" />
         <option value="$PROJECT_DIR$/proto/protocol/base.proto" />
         <option value="$PROJECT_DIR$/pkg/server/coordinator.go" />
-        <option value="$PROJECT_DIR$/Gopkg.toml" />
-        <option value="$PROJECT_DIR$/pkg/docker/client.go" />
         <option value="$PROJECT_DIR$/pkg/etcd/operation.go" />
         <option value="$PROJECT_DIR$/cmd/coordinator/main.go" />
-        <option value="$PROJECT_DIR$/pkg/store/operation.go" />
         <option value="$PROJECT_DIR$/pkg/server/server.go" />
+        <option value="$PROJECT_DIR$/pkg/rpc/client.go" />
+        <option value="$PROJECT_DIR$/pkg/store/operation.go" />
         <option value="$PROJECT_DIR$/pkg/server/handler.go" />
         <option value="$PROJECT_DIR$/pkg/rpc/client_test.go" />
-        <option value="$PROJECT_DIR$/pkg/rpc/client.go" />
+        <option value="$PROJECT_DIR$/pkg/docker/client.go" />
+        <option value="$PROJECT_DIR$/Gopkg.toml" />
+        <option value="$PROJECT_DIR$/pkg/container/client_test.go" />
+        <option value="$PROJECT_DIR$/pkg/container/client.go" />
       </list>
     </option>
   </component>
@@ -115,7 +140,7 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="675" />
+    <option name="x" value="671" />
     <option name="y" value="23" />
     <option name="width" value="1784" />
     <option name="height" value="1365" />
@@ -153,7 +178,18 @@
               <item name="storage" type="b2602c69:ProjectViewProjectNode" />
               <item name="storage" type="462c0819:PsiDirectoryNode" />
               <item name="pkg" type="462c0819:PsiDirectoryNode" />
-              <item name="rpc" type="462c0819:PsiDirectoryNode" />
+              <item name="container" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="storage" type="b2602c69:ProjectViewProjectNode" />
+              <item name="storage" type="462c0819:PsiDirectoryNode" />
+              <item name="pkg" type="462c0819:PsiDirectoryNode" />
+              <item name="controller" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="storage" type="b2602c69:ProjectViewProjectNode" />
+              <item name="storage" type="462c0819:PsiDirectoryNode" />
+              <item name="vendor" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -189,10 +225,10 @@
     </option>
   </component>
   <component name="ToolWindowManager">
-    <frame x="675" y="23" width="1784" height="1365" extended-state="0" />
+    <frame x="712" y="36" width="1784" height="1365" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.19862227" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.19862227" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -205,7 +241,7 @@
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="8" />
       <window_info anchor="bottom" id="Version Control" order="9" />
-      <window_info anchor="bottom" id="Terminal" order="10" weight="0.26630008" />
+      <window_info anchor="bottom" id="Terminal" order="10" visible="true" weight="0.26630008" />
       <window_info anchor="bottom" id="Event Log" order="11" side_tool="true" />
       <window_info anchor="bottom" id="File Transfer" order="12" weight="0.3283582" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -297,13 +333,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pkg/docker/client.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="24">
-          <caret line="1" selection-start-line="1" selection-end-line="1" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/vendor/github.com/gogo/protobuf/proto/encode.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="303">
@@ -311,15 +340,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pkg/store/operation.go">
+    <entry file="file://$PROJECT_DIR$/pkg/store/operation_test.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="533">
-          <caret line="46" column="5" selection-start-line="46" selection-start-column="5" selection-end-line="46" selection-end-column="5" />
-          <folding>
-            <element signature="n#!!block;n#Put#0" />
-            <element signature="n#!!block;n#Get#0" />
-            <element signature="n#!!block;n#GetNodeList#0" />
-          </folding>
+        <state relative-caret-position="192">
+          <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vendor/github.com/tommenx/cdproto/cdpb/cdpb.pb.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="348">
+          <caret line="1019" column="4" selection-start-line="1019" selection-start-column="4" selection-end-line="1019" selection-end-column="4" />
         </state>
       </provider>
     </entry>
@@ -333,24 +364,34 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pkg/store/operation_test.go">
+    <entry file="file://$PROJECT_DIR$/pkg/rpc/client_test.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="192">
-          <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
+        <state relative-caret-position="360">
+          <caret line="21" column="10" lean-forward="true" selection-start-line="21" selection-start-column="10" selection-end-line="21" selection-end-column="10" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Gopkg.toml">
+    <entry file="file://$PROJECT_DIR$/pkg/store/operation.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="912">
-          <caret line="42" selection-start-line="42" selection-end-line="42" />
+        <state relative-caret-position="420">
+          <caret line="44" column="24" selection-start-line="44" selection-start-column="24" selection-end-line="44" selection-end-column="24" />
+          <folding>
+            <element signature="n#!!block;n#Put#0" />
+            <element signature="n#!!block;n#Get#0" />
+            <element signature="n#!!block;n#GetNodeList#0" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Gopkg.lock">
+    <entry file="file://$PROJECT_DIR$/pkg/rpc/client.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="397">
-          <caret line="246" column="23" selection-start-line="246" selection-start-column="18" selection-end-line="246" selection-end-column="23" />
+        <state relative-caret-position="674">
+          <caret line="113" column="5" selection-start-line="113" selection-start-column="5" selection-end-line="113" selection-end-column="5" />
+          <folding>
+            <element signature="n#!!block;n#PutNodeStorage#0" />
+            <element signature="n#!!block;n#GetNodeStorage#0" />
+            <element signature="n#!!block;n#GetPodResource#0" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -361,44 +402,72 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pkg/rpc/client_test.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="400">
-          <caret line="45" column="5" selection-start-line="45" selection-start-column="5" selection-end-line="45" selection-end-column="5" />
-          <folding>
-            <element signature="e#13#45#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pkg/server/handler.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-399">
-          <caret line="34" column="124" selection-start-line="34" selection-start-column="124" selection-end-line="34" selection-end-column="124" />
+        <state relative-caret-position="474">
+          <caret line="111" column="36" selection-start-line="111" selection-start-column="36" selection-end-line="111" selection-end-column="36" />
           <folding>
             <element signature="e#16#167#0" expanded="true" />
             <element signature="n#!!block;n#GetNodeStorage#0" />
             <element signature="n#!!block;n#PutVolume#0" />
-            <element signature="n#!!block;n#GetVolume#0" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/vendor/github.com/tommenx/cdproto/cdpb/cdpb.pb.go">
+    <entry file="file://$PROJECT_DIR$/../../docker/docker/client/client.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="276">
-          <caret line="1016" column="4" selection-start-line="1016" selection-start-column="4" selection-end-line="1016" selection-end-column="4" />
+        <state relative-caret-position="984">
+          <caret line="41" column="13" selection-start-line="41" selection-start-column="13" selection-end-line="41" selection-end-column="13" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pkg/rpc/client.go">
+    <entry file="file://$PROJECT_DIR$/Gopkg.lock">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1158">
-          <caret line="129" selection-start-line="129" selection-end-line="129" />
+        <state relative-caret-position="397">
+          <caret line="276" column="23" selection-start-line="276" selection-start-column="18" selection-end-line="276" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Gopkg.toml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="480">
+          <caret line="44" column="26" selection-start-line="44" selection-start-column="26" selection-end-line="44" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vendor/github.com/docker/docker/client/client_unix.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="5" column="6" selection-start-line="5" selection-start-column="6" selection-end-line="5" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vendor/github.com/docker/docker/client/client.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="269">
+          <caret line="118" column="5" selection-start-line="118" selection-start-column="5" selection-end-line="118" selection-end-column="5" />
           <folding>
-            <element signature="n#!!block;n#PutNodeStorage#0" />
-            <element signature="n#!!block;n#GetNodeStorage#0" />
-            <element signature="n#!!block;n#GetPodResource#0" />
+            <element signature="e#982#1246#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pkg/container/client.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="720">
+          <caret line="30" column="20" selection-start-line="30" selection-start-column="20" selection-end-line="30" selection-end-column="20" />
+          <folding>
+            <element signature="e#19#108#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pkg/container/client_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="336">
+          <caret line="14" column="29" selection-start-line="14" selection-start-column="29" selection-end-line="14" selection-end-column="29" />
+          <folding>
+            <element signature="e#19#51#0" expanded="true" />
           </folding>
         </state>
       </provider>

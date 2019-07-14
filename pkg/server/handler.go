@@ -159,6 +159,7 @@ func (s *server) GetVolume(ctx context.Context, req *cdpb.GetVolumeRequest) (*cd
 		rsp.BaseResp.Message = "unmarshal volume error"
 		return rsp, nil
 	}
+	rsp.Volume = volume
 	rsp.BaseResp.Code = 0
 	rsp.BaseResp.Message = "success"
 	return rsp, nil

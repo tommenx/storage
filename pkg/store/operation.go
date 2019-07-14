@@ -1,7 +1,8 @@
-package etcd
+package store
 
 import (
 	"context"
+	"fmt"
 	"github.com/golang/glog"
 	v3 "go.etcd.io/etcd/clientv3"
 	"strings"
@@ -75,6 +76,7 @@ func (h *EtcdHandler) Get(ctx context.Context, key string, prefix bool) (map[str
 
 func (h *EtcdHandler) PutNode(ctx context.Context, node string, val []byte) error {
 	key := getKey(prefixNode, node)
+	fmt.Printf("key=%v", key)
 	return h.Put(ctx, key, val)
 
 }
@@ -108,7 +110,7 @@ func (h *EtcdHandler) GetPVC(ctx context.Context, ns, pvc string) ([]byte, error
 }
 
 func (h *EtcdHandler) PutPod(ctx context.Context, ns, name string, val []byte) error {
-	key := getKey(prefixNode, ns, name)
+	key := getKey(prefixPod, ns, name)
 	return h.Put(ctx, key, val)
 }
 

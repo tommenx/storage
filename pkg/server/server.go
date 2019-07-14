@@ -3,20 +3,20 @@ package server
 import (
 	"github.com/golang/glog"
 	"github.com/tommenx/cdproto/cdpb"
-	"github.com/tommenx/storage/pkg/etcd"
+	"github.com/tommenx/storage/pkg/store"
 	"google.golang.org/grpc"
 	"net"
 )
 
 type server struct {
-	db etcd.EtcdInterface
+	db store.EtcdInterface
 }
 
 type Server interface {
 	Run()
 }
 
-func NewServer(db etcd.EtcdInterface) Server {
+func NewServer(db store.EtcdInterface) Server {
 	return &server{
 		db: db,
 	}
@@ -28,6 +28,6 @@ func (s *server) Run() {
 		glog.Errorf("listen error, err=%+v", err)
 	}
 	grpcServer := grpc.NewServer()
-	cdpb.RegisterCoordinatorServer(grpcServer, &server{})
+	cdpb.RegisterCoordinatorServer(grpcServer, s)
 	grpcServer.Serve(lst)
 }

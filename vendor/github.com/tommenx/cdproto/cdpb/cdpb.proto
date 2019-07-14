@@ -80,6 +80,8 @@ message PutPodResourceResponse {
 
 message PutVolumeRequest {
     Volume volume = 1;
+    string namespace = 2;
+    string pvc = 3;
     base.Base base = 255;
 }
 
@@ -98,10 +100,22 @@ message GetVolumeResponse {
     base.BaseResp base_resp = 255;
 }
 
+message GetPodResourceRequest {
+    string namespace = 1;
+    string pod = 2;
+    base.Base base = 255;
+}
+
+message GetPodResourceResponse {
+    PodResource pod = 1;
+    base.BaseResp base_resp = 255;
+}
+
 service Coordinator {
     rpc PutNodeStorage (PutNodeStorageRequest) returns (PutNodeStorageResponse);
     rpc GetNodeStorage (GetNodeStorageRequest) returns (GetNodeStorageResponse);
     rpc PutPodResource (PutPodResourceRequest) returns (PutPodResourceResponse);
+    rpc GetPodResource (GetPodResourceRequest) returns (GetPodResourceResponse);
     rpc PutVolume (PutVolumeRequest) returns (PutVolumeResponse);
     rpc GetVolume (GetVolumeRequest) returns (GetVolumeResponse);
 }

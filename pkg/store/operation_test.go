@@ -1,4 +1,4 @@
-package etcd
+package store
 
 import (
 	"context"

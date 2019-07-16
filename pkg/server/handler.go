@@ -117,8 +117,7 @@ func (s *server) PutVolume(ctx context.Context, req *cdpb.PutVolumeRequest) (*cd
 	rsp := &cdpb.PutVolumeResponse{
 		BaseResp: &base.BaseResp{},
 	}
-	namespace := req.Namespace
-	pvc := req.Pvc
+
 	val, err := proto.Marshal(req.Volume)
 	if err != nil {
 		glog.Errorf("marshal volume error, pvc=%v, err=%+v", pvc, err)

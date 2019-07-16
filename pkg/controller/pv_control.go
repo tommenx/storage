@@ -12,10 +12,12 @@ type pvController struct {
 	pvListerSynced cache.InformerSynced
 }
 
-type pvControlInterface interface {
+type PVController interface {
+	Run(stop <-chan struct{})
+	GetPVCByPV(pvName string) (string, string, error)
 }
 
-func NewPVController(informerFactory informers.SharedInformerFactory) *pvController {
+func NewPVController(informerFactory informers.SharedInformerFactory) PVController {
 	pvInformfer := informerFactory.Core().V1().PersistentVolumes()
 	controller := &pvController{}
 	controller.pvLister = pvInformfer.Lister()
@@ -36,5 +38,6 @@ func (c *pvController) GetPVCByPV(pvName string) (string, string, error) {
 		glog.Errorf("get pv info error, pv name=%s, err=%+v", pvName, err)
 		return "", "", nil
 	}
+
 	return pv.Spec.ClaimRef.Namespace, pv.Spec.ClaimRef.Name, nil
 }

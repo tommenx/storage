@@ -6,6 +6,7 @@ import (
 	"github.com/golang/glog"
 	"github.com/tommenx/cdproto/base"
 	"github.com/tommenx/cdproto/cdpb"
+	"github.com/tommenx/storage/pkg/controller"
 )
 
 func (s *server) PutNodeStorage(ctx context.Context, req *cdpb.PutNodeStorageRequest) (*cdpb.PutNodeStorageResponse, error) {
@@ -113,11 +114,29 @@ func (s *server) GetPodResource(ctx context.Context, req *cdpb.GetPodResourceReq
 	return rsp, nil
 }
 
+//TODO
+//待确认能否在创建pod之前先创建pvc，并且能够绑定上
+//否则就比较麻烦啦
 func (s *server) PutVolume(ctx context.Context, req *cdpb.PutVolumeRequest) (*cdpb.PutVolumeResponse, error) {
 	rsp := &cdpb.PutVolumeResponse{
 		BaseResp: &base.BaseResp{},
 	}
-
+	pvName := req.Pv
+	namespace, pvc, err := s.pv.GetPVCByPV(pvName)
+	retry := 5
+	for err == controller.ErrNotBound {
+		if retry == 0 {
+			break
+		}
+		namespace, pvc, err = s.pv.GetPVCByPV(pvName)
+		retry--
+	}
+	if err != nil {
+		glog.Errorf("get bounded pvc error,pv name=%s, err=%+v", pvName, err)
+		rsp.BaseResp.Code = 3
+		rsp.BaseResp.Message = "get pvc by pv error"
+		return rsp, nil
+	}
 	val, err := proto.Marshal(req.Volume)
 	if err != nil {
 		glog.Errorf("marshal volume error, pvc=%v, err=%+v", pvc, err)

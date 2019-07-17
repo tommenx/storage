@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/golang/glog"
 	"github.com/tommenx/cdproto/cdpb"
+	"github.com/tommenx/storage/pkg/controller"
 	"github.com/tommenx/storage/pkg/store"
 	"google.golang.org/grpc"
 	"net"
@@ -10,15 +11,17 @@ import (
 
 type server struct {
 	db store.EtcdInterface
+	pv controller.PVController
 }
 
 type Server interface {
 	Run()
 }
 
-func NewServer(db store.EtcdInterface) Server {
+func NewServer(db store.EtcdInterface, pv controller.PVController) Server {
 	return &server{
 		db: db,
+		pv: pv,
 	}
 }
 

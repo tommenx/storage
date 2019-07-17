@@ -82,6 +82,14 @@ func (c *Controller) sync(key string) error {
 		return err
 	}
 	glog.Infof("%+v", pod)
+	//TODO
+	//需要增加上具体的处理的函数
+	//1. 获取定义的存储的类型
+	//2. 根据pod的name和ns获取对应的cgroup_path，
+	//		a.如果存在，对其进行操作
+	//      b.如果不存在，需要通过dockerid获取cgroup_path
+	//3. 根据pod的pvc和ns去获取对应的信息，包括主副设备号
+	//4. 设置存储设备的隔离
 
 	return nil
 }

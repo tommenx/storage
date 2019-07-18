@@ -1,0 +1,7 @@
+apiVersion: storage.io/v1alpha1
+kind: StorageLabel
+metadata:
+  name: fast
+spec:
+  read_bps_device: 50
+  write_bps_device: 20

@@ -351,27 +351,6 @@
   revision = "f51c12702a4d"
 
 [[projects]]
-  branch = "master"
-  digest = "1:2fc17e91d2a0f618e5e39cd8f9cc5d59a1abcb0949459a3e8655b5562972d843"
-  name = "golang.org/x/tools"
-  packages = [
-    "go/ast/astutil",
-    "go/gcexportdata",
-    "go/internal/gcimporter",
-    "go/internal/packagesdriver",
-    "go/packages",
-    "go/types/typeutil",
-    "imports",
-    "internal/fastwalk",
-    "internal/gopathwalk",
-    "internal/imports",
-    "internal/module",
-    "internal/semver",
-  ]
-  pruneopts = "UT"
-  revision = "128ec6dfca091cc7d4fe6d18d97911f37c95a590"
-
-[[projects]]
   digest = "1:6eb6e3b6d9fffb62958cf7f7d88dbbe1dd6839436b0802e194c590667a40412a"
   name = "google.golang.org/appengine"
   packages = [
@@ -703,52 +682,6 @@
   version = "v12.0.0"
 
 [[projects]]
-  branch = "master"
-  digest = "1:eaec2d37fe7fba40f5bcd237eed510d4cbf070b1d7d3c2dce99810d0b6c99609"
-  name = "k8s.io/code-generator"
-  packages = [
-    "cmd/client-gen",
-    "cmd/client-gen/args",
-    "cmd/client-gen/generators",
-    "cmd/client-gen/generators/fake",
-    "cmd/client-gen/generators/scheme",
-    "cmd/client-gen/generators/util",
-    "cmd/client-gen/path",
-    "cmd/client-gen/types",
-    "cmd/deepcopy-gen",
-    "cmd/deepcopy-gen/args",
-    "cmd/defaulter-gen",
-    "cmd/defaulter-gen/args",
-    "cmd/informer-gen",
-    "cmd/informer-gen/args",
-    "cmd/informer-gen/generators",
-    "cmd/lister-gen",
-    "cmd/lister-gen/args",
-    "cmd/lister-gen/generators",
-    "pkg/namer",
-    "pkg/util",
-  ]
-  pruneopts = "UT"
-  revision = "77f3a1fe56bb8df440147ec56252f6b5686330df"
-
-[[projects]]
-  branch = "master"
-  digest = "1:39912eb5f8eaf46486faae0839586c27c93423e552f76875defa048f52c15c15"
-  name = "k8s.io/gengo"
-  packages = [
-    "args",
-    "examples/deepcopy-gen/generators",
-    "examples/defaulter-gen/generators",
-    "examples/set-gen/sets",
-    "generator",
-    "namer",
-    "parser",
-    "types",
-  ]
-  pruneopts = "UT"
-  revision = "e17681d19d3ac4837a019ece36c2a0ec31ffe985"
-
-[[projects]]
   digest = "1:fd24a140b16df03386fb0d9da8a5879e3b0178f35fff6545d3101f70ff9a4f1a"
   name = "k8s.io/klog"
   packages = ["."]
@@ -787,6 +720,7 @@
     "go.etcd.io/etcd/clientv3",
     "google.golang.org/grpc",
     "k8s.io/api/core/v1",
+    "k8s.io/apimachinery/pkg/apis/meta/v1",
     "k8s.io/apimachinery/pkg/util/wait",
     "k8s.io/client-go/informers",
     "k8s.io/client-go/kubernetes",
@@ -794,11 +728,6 @@
     "k8s.io/client-go/tools/cache",
     "k8s.io/client-go/tools/clientcmd",
     "k8s.io/client-go/util/workqueue",
-    "k8s.io/code-generator/cmd/client-gen",
-    "k8s.io/code-generator/cmd/deepcopy-gen",
-    "k8s.io/code-generator/cmd/defaulter-gen",
-    "k8s.io/code-generator/cmd/informer-gen",
-    "k8s.io/code-generator/cmd/lister-gen",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

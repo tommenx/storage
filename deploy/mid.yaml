@@ -1,0 +1,7 @@
+apiVersion: storage.io/v1alpha1
+kind: StorageLabel
+metadata:
+  name: mid
+spec:
+  read_bps_device: 30
+  write_bps_device: 10

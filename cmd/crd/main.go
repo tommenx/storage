@@ -2,9 +2,9 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"github.com/golang/glog"
 	"github.com/tommenx/storage/pkg/controller"
-	"golang.org/x/tools/go/ssa/interp/testdata/src/fmt"
 )
 
 func init() {

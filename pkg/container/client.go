@@ -10,7 +10,11 @@ type Client struct {
 	cli *client.Client
 }
 
-func NewClient() *Client {
+type ContainerInterafce interface {
+	GetCgroupPath(ctx context.Context, dockerId string) (string, error)
+}
+
+func NewClient() ContainerInterafce {
 	cli, err := client.NewClientWithOpts(client.WithVersion("1.39"))
 	if err != nil {
 		glog.Errorf("create docker client error, err=%+v", err)

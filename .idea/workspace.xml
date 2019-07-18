@@ -3,130 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="885a1334-0d6a-4990-81f4-35a5f62c0457" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Gopkg.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Gopkg.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Gopkg.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Gopkg.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/controller/util.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/controller/util.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/AUTHORS" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/CONTRIBUTORS" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/LICENSE" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/PATENTS" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/cmd/getgo/LICENSE" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/go/ast/astutil/enclosing.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/go/ast/astutil/imports.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/go/ast/astutil/rewrite.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/go/ast/astutil/util.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/go/gcexportdata/gcexportdata.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/go/gcexportdata/importer.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/go/gcexportdata/main.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/go/internal/gcimporter/bexport.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/go/internal/gcimporter/bimport.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/go/internal/gcimporter/exportdata.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/go/internal/gcimporter/gcimporter.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/go/internal/gcimporter/iexport.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/go/internal/gcimporter/iimport.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/go/internal/gcimporter/newInterface10.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/go/internal/gcimporter/newInterface11.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/go/internal/packagesdriver/sizes.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/go/packages/doc.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/go/packages/external.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/go/packages/golist.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/go/packages/golist_overlay.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/go/packages/packages.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/go/packages/visit.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/go/types/typeutil/callee.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/go/types/typeutil/imports.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/go/types/typeutil/map.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/go/types/typeutil/methodsetcache.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/go/types/typeutil/ui.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/imports/forward.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/internal/fastwalk/fastwalk.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/internal/fastwalk/fastwalk_dirent_fileno.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/internal/fastwalk/fastwalk_dirent_ino.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/internal/fastwalk/fastwalk_dirent_namlen_bsd.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/internal/fastwalk/fastwalk_dirent_namlen_linux.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/internal/fastwalk/fastwalk_portable.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/internal/fastwalk/fastwalk_unix.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/internal/gopathwalk/walk.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/internal/imports/fix.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/internal/imports/imports.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/internal/imports/mkindex.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/internal/imports/mkstdlib.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/internal/imports/mod.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/internal/imports/sortimports.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/internal/imports/zstdlib.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/internal/module/module.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/tools/internal/semver/semver.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/LICENSE" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/client-gen/OWNERS" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/client-gen/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/client-gen/args/args.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/client-gen/args/gvpackages.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/client-gen/args/gvtype.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/client-gen/generators/client_generator.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/client-gen/generators/fake/fake_client_generator.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/client-gen/generators/fake/generator_fake_for_clientset.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/client-gen/generators/fake/generator_fake_for_group.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/client-gen/generators/fake/generator_fake_for_type.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/client-gen/generators/generator_for_clientset.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/client-gen/generators/generator_for_expansion.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/client-gen/generators/generator_for_group.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/client-gen/generators/generator_for_type.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/client-gen/generators/scheme/generator_for_scheme.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/client-gen/generators/util/tags.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/client-gen/main.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/client-gen/path/path.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/client-gen/types/helpers.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/client-gen/types/types.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/deepcopy-gen/args/args.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/deepcopy-gen/main.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/defaulter-gen/args/args.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/defaulter-gen/main.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/informer-gen/args/args.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/informer-gen/generators/factory.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/informer-gen/generators/factoryinterface.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/informer-gen/generators/generic.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/informer-gen/generators/groupinterface.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/informer-gen/generators/informer.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/informer-gen/generators/packages.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/informer-gen/generators/types.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/informer-gen/generators/versioninterface.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/informer-gen/main.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/lister-gen/.import-restrictions" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/lister-gen/args/args.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/lister-gen/generators/expansion.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/lister-gen/generators/lister.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/cmd/lister-gen/main.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/pkg/namer/tag-override.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/code-generator/pkg/util/build.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/gengo/LICENSE" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/gengo/args/args.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/gengo/examples/deepcopy-gen/generators/deepcopy.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/gengo/examples/defaulter-gen/generators/defaulter.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/gengo/examples/set-gen/sets/byte.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/gengo/examples/set-gen/sets/doc.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/gengo/examples/set-gen/sets/empty.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/gengo/examples/set-gen/sets/int.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/gengo/examples/set-gen/sets/int64.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/gengo/examples/set-gen/sets/string.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/gengo/generator/default_generator.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/gengo/generator/default_package.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/gengo/generator/doc.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/gengo/generator/error_tracker.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/gengo/generator/execute.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/gengo/generator/generator.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/gengo/generator/import_tracker.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/gengo/generator/snippet_writer.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/gengo/namer/doc.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/gengo/namer/import_tracker.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/gengo/namer/namer.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/gengo/namer/order.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/gengo/namer/plural_namer.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/gengo/parser/doc.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/gengo/parser/parse.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/gengo/types/comments.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/gengo/types/doc.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/gengo/types/flatten.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/gengo/types/types.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/crd/main" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -136,27 +13,6 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/deploy/fast.yaml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="144">
-              <caret line="6" column="22" selection-start-line="6" selection-start-column="22" selection-end-line="6" selection-end-column="22" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pkg/apis/storage.io/v1alpha1/register.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="549">
-              <caret line="38" column="24" selection-start-line="38" selection-start-column="24" selection-end-line="38" selection-end-column="24" />
-              <folding>
-                <element signature="e#18#152#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cmd/coordinator/main.go">
           <provider selected="true" editor-type-id="text-editor">
@@ -169,8 +25,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/cmd/crd/main.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="576">
-              <caret line="24" column="30" selection-start-line="24" selection-start-column="30" selection-end-line="24" selection-end-column="30" />
+            <state relative-caret-position="408">
+              <caret line="17" column="34" selection-start-line="17" selection-start-column="34" selection-end-line="17" selection-end-column="34" />
               <folding>
                 <element signature="e#14#77#0" expanded="true" />
               </folding>
@@ -214,20 +70,11 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pkg/controller/storage_label_controller.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="96">
-              <caret line="16" column="4" selection-start-line="16" selection-start-column="4" selection-end-line="16" selection-end-column="4" />
+            <state relative-caret-position="432">
+              <caret line="18" selection-start-line="18" selection-end-line="18" />
               <folding>
                 <element signature="e#20#211#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pkg/client/listers/storage.io/v1alpha1/storagelabel.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="409">
-              <caret line="28" column="22" selection-start-line="28" selection-start-column="22" selection-end-line="28" selection-end-column="22" />
             </state>
           </provider>
         </entry>
@@ -306,8 +153,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="963" />
-    <option name="y" value="93" />
+    <option name="x" value="853" />
+    <option name="y" value="23" />
     <option name="width" value="1604" />
     <option name="height" value="1339" />
   </component>
@@ -355,17 +202,6 @@
               <item name="storage" type="462c0819:PsiDirectoryNode" />
               <item name="hack" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="storage" type="b2602c69:ProjectViewProjectNode" />
-              <item name="storage" type="462c0819:PsiDirectoryNode" />
-              <item name="pkg" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="storage" type="b2602c69:ProjectViewProjectNode" />
-              <item name="storage" type="462c0819:PsiDirectoryNode" />
-              <item name="pkg" type="462c0819:PsiDirectoryNode" />
-              <item name="controller" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
@@ -400,10 +236,9 @@
     </option>
   </component>
   <component name="ToolWindowManager">
-    <frame x="963" y="93" width="1604" height="1339" extended-state="0" />
-    <editor active="true" />
+    <frame x="853" y="23" width="1604" height="1339" extended-state="0" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.22919334" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.22919334" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -416,7 +251,7 @@
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="8" />
       <window_info anchor="bottom" id="Version Control" order="9" />
-      <window_info anchor="bottom" id="Terminal" order="10" sideWeight="0.4987196" visible="true" weight="0.27185243" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="10" sideWeight="0.4987196" visible="true" weight="0.27185243" />
       <window_info anchor="bottom" id="Event Log" order="11" sideWeight="0.5012804" side_tool="true" weight="0.27185243" />
       <window_info anchor="bottom" id="File Transfer" order="12" sideWeight="0.4993598" weight="0.32798716" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -433,20 +268,6 @@
     <option name="LAST_COMMIT_MESSAGE" value="add cgroup isolation" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/vendor/google.golang.org/grpc/clientconn.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="322">
-          <caret line="104" column="17" selection-start-line="104" selection-start-column="17" selection-end-line="104" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/vendor/github.com/gogo/protobuf/proto/encode.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="303">
-          <caret line="229" column="5" selection-start-line="229" selection-start-column="5" selection-end-line="229" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pkg/store/operation_test.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="192">
@@ -776,16 +597,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pkg/controller/storage_label_controller.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="96">
-          <caret line="16" column="4" selection-start-line="16" selection-start-column="4" selection-end-line="16" selection-end-column="4" />
-          <folding>
-            <element signature="e#20#211#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/cmd/catchup/main.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="187">
@@ -796,10 +607,28 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/pkg/controller/storage_label_controller.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="432">
+          <caret line="18" selection-start-line="18" selection-end-line="18" />
+          <folding>
+            <element signature="e#20#211#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pkg/client/clientset/versioned/typed/storage.io/v1alpha1/storagelabel.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1608" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pkg/client/clientset/versioned/typed/storage.io/v1alpha1/storagelable.go">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/cmd/crd/main.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="576">
-          <caret line="24" column="30" selection-start-line="24" selection-start-column="30" selection-end-line="24" selection-end-column="30" />
+        <state relative-caret-position="408">
+          <caret line="17" column="34" selection-start-line="17" selection-start-column="34" selection-end-line="17" selection-end-column="34" />
           <folding>
             <element signature="e#14#77#0" expanded="true" />
           </folding>

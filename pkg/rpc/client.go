@@ -55,12 +55,37 @@ func GetNodeStorage(ctx context.Context) (map[string]*cdpb.NodeStorage, error) {
 	return rsp.NodeMap, nil
 }
 
-func PutPodResource(ctx context.Context, ns, name string, request map[string]int64) error {
+func PutPodResource(ctx context.Context, basic map[string]string, request map[string]int64) error {
 	req := &cdpb.PutPodResourceRequest{}
 	pod := &cdpb.PodResource{}
-	pod.Name = name
-	pod.Namespace = ns
+	if name, ok := basic["name"]; ok {
+		pod.Name = name
+	}
+	if namespace, ok := basic["namespace"]; ok {
+		pod.Namespace = namespace
+	}
+	if dockerId, ok := basic["docker_id"]; ok {
+		pod.DockerId = dockerId
+	}
+	if cgroupPath, ok := basic["cgroup_path"]; ok {
+		pod.CgroupPath = cgroupPath
+	}
 	pod.RequestResource = request
+	req.Pod = pod
+	rsp, err := cli.PutPodResource(ctx, req)
+	if err != nil {
+		glog.Errorf("call put pod resource error, err=%+v", err)
+		return err
+	}
+	if rsp.BaseResp.Code != 0 {
+		glog.Errorf("remote server error, code=%d, msg=%v", rsp.BaseResp.Code, rsp.BaseResp.Message)
+		return errors.New("remote server put pod resource error")
+	}
+	return nil
+}
+
+func DirectPutPodResource(ctx context.Context, pod *cdpb.PodResource) error {
+	req := &cdpb.PutPodResourceRequest{}
 	req.Pod = pod
 	rsp, err := cli.PutPodResource(ctx, req)
 	if err != nil {
@@ -91,12 +116,11 @@ func GetPodResource(ctx context.Context, ns, name string) (*cdpb.PodResource, er
 	return rsp.Pod, nil
 }
 
-func PutVolume(ctx context.Context, ns, pvc string, volume *cdpb.Volume) error {
+func PutVolume(ctx context.Context, pv string, volume *cdpb.Volume) error {
 	req := &cdpb.PutVolumeRequest{
-		Base:      &base.Base{},
-		Volume:    volume,
-		Namespace: ns,
-		Pvc:       pvc,
+		Base:   &base.Base{},
+		Volume: volume,
+		Pv:     pv,
 	}
 	rsp, err := cli.PutVolume(ctx, req)
 	if err != nil {

@@ -2,7 +2,6 @@ package controller
 
 import (
 	"github.com/golang/glog"
-	imformers "github.com/tommenx/storage/pkg/client/informers/externalversions"
 	listers "github.com/tommenx/storage/pkg/client/listers/storage.io/v1alpha1"
 	"k8s.io/client-go/tools/cache"
 )
@@ -14,19 +13,11 @@ type storageLabelController struct {
 
 type storageLabelControllerInterafce interface {
 	GetStorageLabel(name string) (map[string]int64, error)
-	Run(stopCh <-chan struct{})
 }
 
 func NewStorageLabelController(slLister listers.StorageLabelLister) storageLabelControllerInterafce {
 	return &storageLabelController{
 		slLister: slLister,
-	}
-}
-
-func (c *storageLabelController) Run(stopCh <-chan struct{}) {
-	if !cache.WaitForCacheSync(stopCh, c.slListerSynced) {
-		glog.Error("sync storage label timeout")
-		return
 	}
 }
 
@@ -46,9 +37,4 @@ func (c *storageLabelController) GetStorageLabel(name string) (map[string]int64,
 	request["read_bps_device"] = readBpsDevice
 	request["read_iops_device"] = readIopsDevice
 	return request, nil
-}
-
-func NewFakeStorageLabelController(informerFactory imformers.SharedInformerFactory) storageLabelControllerInterafce {
-	slInformer := informerFactory.Storage().V1alpha1().StorageLabels()
-	return NewStorageLabelController(slInformer.Lister())
 }

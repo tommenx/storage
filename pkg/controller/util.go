@@ -1,9 +1,11 @@
 package controller
 
 import (
+	"errors"
 	"github.com/golang/glog"
 	"github.com/tommenx/storage/pkg/client/clientset/versioned"
 	imformers "github.com/tommenx/storage/pkg/client/informers/externalversions"
+	corev1 "k8s.io/api/core/v1"
 	kubeinformers "k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
@@ -41,4 +43,27 @@ func NewSLInformerFactory(path string) imformers.SharedInformerFactory {
 	}
 	informerFactory := imformers.NewSharedInformerFactory(cli, resyncDuration)
 	return informerFactory
+}
+
+func GetDockerIdByPod(pod *corev1.Pod) (string, error) {
+	name, ok := pod.Annotations["storage.io/docker"]
+	if !ok {
+		return "", errors.New("do not specify docker name")
+	}
+	for _, container := range pod.Status.ContainerStatuses {
+		if container.Name == name {
+			return container.ContainerID, nil
+		}
+	}
+	return "", ErrNotFound
+}
+
+func GetPVCName(pod *corev1.Pod) string {
+	pvcName := ""
+	for _, volume := range pod.Spec.Volumes {
+		if volume.PersistentVolumeClaim != nil {
+			pvcName = volume.PersistentVolumeClaim.ClaimName
+		}
+	}
+	return pvcName
 }

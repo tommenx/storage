@@ -4,10 +4,9 @@ import (
 	"flag"
 	"github.com/golang/glog"
 	"github.com/tommenx/storage/pkg/controller"
-	"k8s.io/client-go/informers"
+	"github.com/tommenx/storage/pkg/rpc"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
-	"time"
 )
 
 func init() {
@@ -16,6 +15,7 @@ func init() {
 
 func main() {
 	flag.Parse()
+	rpc.Init("10.48.233.0:50051")
 	path := "/root/.kube/config"
 	cfg, err := clientcmd.BuildConfigFromFlags("", path)
 	if err != nil {
@@ -27,9 +27,11 @@ func main() {
 		glog.Errorf("create kubernetes client error, err=%+v", err)
 		panic(err)
 	}
-	informerFactory := informers.NewSharedInformerFactory(clienset, time.Second*30)
-	controller := controller.NewController(clienset, informerFactory)
-	stop := make(chan struct{})
-	go informerFactory.Start(stop)
-	controller.Run(5, stop)
+	kubeInformerFactory := controller.NewSharedInformerFactory(path)
+	informerFactory := controller.NewSLInformerFactory(path)
+	controller := controller.NewController(clienset, kubeInformerFactory, informerFactory)
+	stopCh := make(chan struct{})
+	go kubeInformerFactory.Start(stopCh)
+	go informerFactory.Start(stopCh)
+	controller.Run(1, stopCh)
 }

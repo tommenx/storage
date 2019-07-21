@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/golang/glog"
 	v3 "go.etcd.io/etcd/clientv3"
@@ -18,6 +19,7 @@ var (
 	prefixNode     = prefix + "nodes/"
 	prefixPod      = prefix + "pods/"
 	prefixPVC      = prefix + "pvcs/"
+	ErrNotExist    = errors.New("key not exist")
 )
 
 type EtcdHandler struct {
@@ -70,6 +72,9 @@ func (h *EtcdHandler) Get(ctx context.Context, key string, prefix bool) (map[str
 	for _, kv := range rsp.Kvs {
 		path := string(kv.Key)
 		kvs[path] = kv.Value
+	}
+	if len(kvs) == 0 {
+		return nil, ErrNotExist
 	}
 	return kvs, nil
 }

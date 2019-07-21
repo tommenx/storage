@@ -15,21 +15,22 @@ import (
 	"github.com/tommenx/storage/pkg/isolate"
 	"github.com/tommenx/storage/pkg/rpc"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/client-go/kubernetes"
 )
 
 type volumeControl struct {
-	kubeCli          kubernetes.Interface
 	dockerController container.ContainerInterafce
 	slController     storageLabelControllerInterafce
 }
 
-func NewVolumeControl(kubeCli kubernetes.Interface, slLister listers.StorageLabelLister) *volumeControl {
+type VolumeControlInterface interface {
+	Sync(pod *corev1.Pod) error
+}
+
+func NewVolumeControl(slLister listers.StorageLabelLister) VolumeControlInterface {
 	slController := NewStorageLabelController(slLister)
 	return &volumeControl{
 		dockerController: container.NewClient(),
 		slController:     slController,
-		kubeCli:          kubeCli,
 	}
 }
 

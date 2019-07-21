@@ -2,9 +2,11 @@ package controller
 
 import (
 	"github.com/golang/glog"
+	informers "github.com/tommenx/storage/pkg/client/informers/externalversions"
+	listers "github.com/tommenx/storage/pkg/client/listers/storage.io/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/util/wait"
-	"k8s.io/client-go/informers"
+	kubeinformers "k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
 	corelisters "k8s.io/client-go/listers/core/v1"
 	"k8s.io/client-go/tools/cache"
@@ -15,12 +17,19 @@ import (
 type Controller struct {
 	kubeClient      kubernetes.Interface
 	podLister       corelisters.PodLister
-	queue           workqueue.RateLimitingInterface
 	podListerSynced cache.InformerSynced
+	slLister        listers.StorageLabelLister
+	slListerSynced  cache.InformerSynced
+	control         VolumeControlInterface
+	queue           workqueue.RateLimitingInterface
 }
 
-func NewController(kubeCli kubernetes.Interface, informerFactory informers.SharedInformerFactory) *Controller {
-	podInformer := informerFactory.Core().V1().Pods()
+func NewController(
+	kubeCli kubernetes.Interface,
+	kubeInformerFactory kubeinformers.SharedInformerFactory,
+	informerFactory informers.SharedInformerFactory) *Controller {
+	podInformer := kubeInformerFactory.Core().V1().Pods()
+	slInformer := informerFactory.Storage().V1alpha1().StorageLabels()
 	c := &Controller{
 		kubeClient: kubeCli,
 		queue:      workqueue.NewRateLimitingQueue(workqueue.DefaultControllerRateLimiter()),
@@ -32,8 +41,12 @@ func NewController(kubeCli kubernetes.Interface, informerFactory informers.Share
 		},
 		DeleteFunc: c.deletePod,
 	})
+	control := NewVolumeControl(slInformer.Lister())
 	c.podLister = podInformer.Lister()
 	c.podListerSynced = podInformer.Informer().HasSynced
+	c.slLister = slInformer.Lister()
+	c.slListerSynced = slInformer.Informer().HasSynced
+	c.control = control
 	return c
 }
 
@@ -66,6 +79,7 @@ func (c *Controller) processNextWrokItem() bool {
 	}
 	defer c.queue.Done(key)
 	if err := c.sync(key.(string)); err != nil {
+		glog.Errorf("sync volume error, err=%+v", err)
 		c.queue.Forget(key)
 	}
 	return true
@@ -81,22 +95,16 @@ func (c *Controller) sync(key string) error {
 		glog.Errorf("get pod error, name=%s, err=%+v", name, err)
 		return err
 	}
-	glog.Infof("%+v", pod)
-	//TODO
-	//需要增加上具体的处理的函数
-	//1. 获取定义的存储的类型
-	//2. 根据pod的name和ns获取对应的cgroup_path，
-	//		a.如果存在，对其进行操作
-	//      b.如果不存在，需要通过dockerid获取cgroup_path
-	//3. 根据pod的pvc和ns去获取对应的信息，包括主副设备号
-	//4. 设置存储设备的隔离
+	return c.syncVolume(pod.DeepCopy())
+}
 
-	return nil
+func (c *Controller) syncVolume(pod *corev1.Pod) error {
+	return c.control.Sync(pod)
 }
 
 func (c *Controller) checkResolve(pod *corev1.Pod) bool {
 	annotations := pod.GetAnnotations()
-	if status := annotations["scale.io/storage"]; status == "enable" {
+	if status := annotations["storage.io/storage"]; status == "enable" {
 		return true
 	}
 	return false

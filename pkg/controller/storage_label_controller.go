@@ -3,12 +3,10 @@ package controller
 import (
 	"github.com/golang/glog"
 	listers "github.com/tommenx/storage/pkg/client/listers/storage.io/v1alpha1"
-	"k8s.io/client-go/tools/cache"
 )
 
 type storageLabelController struct {
-	slLister       listers.StorageLabelLister
-	slListerSynced cache.InformerSynced
+	slLister listers.StorageLabelLister
 }
 
 type storageLabelControllerInterafce interface {

@@ -60,7 +60,7 @@ func TestPutPodResource(t *testing.T) {
 		Name:      name,
 		Namespace: ns,
 		Node:      "localhost.localdomain",
-		DockerId:  "a4291e6bab74280e0586521cdfd959b8448c42fa8995d1dbdd710db5b14b49b2",
+		DockerId:  "b65ba1c84bd69e6065985ac7a415a7ce5052cc4db82057a97ea22d3a76ae34fd",
 	}
 	val, err := proto.Marshal(pod)
 	if err != nil {

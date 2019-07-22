@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"github.com/golang/glog"
 	informers "github.com/tommenx/storage/pkg/client/informers/externalversions"
 	listers "github.com/tommenx/storage/pkg/client/listers/storage.io/v1alpha1"
@@ -14,6 +15,10 @@ import (
 	"time"
 )
 
+var (
+	ErrRetry = errors.New("pod not ready, retry")
+)
+
 type Controller struct {
 	kubeClient      kubernetes.Interface
 	podLister       corelisters.PodLister
@@ -22,12 +27,14 @@ type Controller struct {
 	slListerSynced  cache.InformerSynced
 	control         VolumeControlInterface
 	queue           workqueue.RateLimitingInterface
+	nodeName        string
 }
 
 func NewController(
 	kubeCli kubernetes.Interface,
 	kubeInformerFactory kubeinformers.SharedInformerFactory,
-	informerFactory informers.SharedInformerFactory) *Controller {
+	informerFactory informers.SharedInformerFactory,
+	nodeName string) *Controller {
 	podInformer := kubeInformerFactory.Core().V1().Pods()
 	slInformer := informerFactory.Storage().V1alpha1().StorageLabels()
 	c := &Controller{
@@ -47,6 +54,7 @@ func NewController(
 	c.slLister = slInformer.Lister()
 	c.slListerSynced = slInformer.Informer().HasSynced
 	c.control = control
+	c.nodeName = nodeName
 	return c
 }
 
@@ -79,9 +87,13 @@ func (c *Controller) processNextWrokItem() bool {
 	}
 	defer c.queue.Done(key)
 	if err := c.sync(key.(string)); err != nil {
+		if err == ErrRetry {
+			glog.Infof("Pod: %v, still need sync: %v, requeuing", key.(string), err)
+			c.queue.AddRateLimited(key)
+		}
 		glog.Errorf("sync volume error, err=%+v", err)
-		c.queue.Forget(key)
 	}
+	c.queue.Forget(key)
 	return true
 }
 
@@ -99,6 +111,17 @@ func (c *Controller) sync(key string) error {
 }
 
 func (c *Controller) syncVolume(pod *corev1.Pod) error {
+	//需要判断是否是当前的节点
+	//判断pod的状态是否是running
+	podName := pod.Name
+	namespace := pod.Namespace
+	if pod.Spec.NodeName != c.nodeName {
+		return errors.New("not this node's pod")
+	}
+	if pod.Status.Phase != corev1.PodRunning {
+		glog.Infof("%s/%s phase is %s, retry", podName, namespace, pod.Status.Phase)
+		return ErrRetry
+	}
 	return c.control.Sync(pod)
 }
 
@@ -120,7 +143,6 @@ func (c *Controller) addPod(obj interface{}) {
 }
 
 func (c *Controller) deletePod(obj interface{}) {
-	glog.Info("detect delete pod")
 	pod, ok := obj.(*corev1.Pod)
 	if !ok {
 		tombstone, ok := obj.(cache.DeletedFinalStateUnknown)
@@ -140,7 +162,6 @@ func (c *Controller) deletePod(obj interface{}) {
 }
 
 func (c *Controller) updatePod(old, cur interface{}) {
-	glog.Info("detect update pod")
 	curPod := cur.(*corev1.Pod)
 	oldPod := old.(*corev1.Pod)
 	if curPod.ResourceVersion == oldPod.ResourceVersion {

@@ -18,10 +18,20 @@
   name = "k8s.io/client-go"
   version = "12.0.0"
 
+
+[[constraint]]
+  name = "github.com/docker/docker"
+  branch = "master"
+
+[[constraint]]
+  name = "github.com/container-storage-interface/spec"
+  version = "v1.0.0"
+
+
 [prune]
   go-tests = true
   unused-packages = true
 
 [[constraint]]
-  name = "github.com/docker/docker"
-  branch = "master"
+  name = "k8s.io/kubernetes"
+  version = "1.15.1"

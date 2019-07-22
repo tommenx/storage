@@ -9,8 +9,13 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
+var (
+	nodeName string
+)
+
 func init() {
 	flag.Set("logtostderr", "true")
+	flag.StringVar(&nodeName, "node", "localhost.localdomain", "use to identify node")
 }
 
 func main() {
@@ -29,7 +34,7 @@ func main() {
 	}
 	kubeInformerFactory := controller.NewSharedInformerFactory(path)
 	informerFactory := controller.NewSLInformerFactory(path)
-	controller := controller.NewController(clienset, kubeInformerFactory, informerFactory)
+	controller := controller.NewController(clienset, kubeInformerFactory, informerFactory, nodeName)
 	stopCh := make(chan struct{})
 	go kubeInformerFactory.Start(stopCh)
 	go informerFactory.Start(stopCh)

@@ -8,11 +8,15 @@ metadata:
     storage.io/docker: nginx
 spec:
   containers:
-    - name: nginx
-      image: nginx
+    - name: ubuntu
+      image: ubuntu
+      imagePullPolicy: "IfNotPresent"
+      command:
+        - sleep
+        - "3600"
       volumeMounts:
         - name: datapv
-          mountPath: /data/db
+          mountPath: /data/
       ports:
         - containerPort: 80
   volumes:

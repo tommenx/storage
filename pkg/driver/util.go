@@ -155,3 +155,19 @@ func (m *mounter) IsMounted(target string) (bool, error) {
 	}
 	return false, nil
 }
+
+func Run(cmd string) (string, error) {
+	out, err := exec.Command("sh", "-c", cmd).CombinedOutput()
+	if err != nil {
+		return "", fmt.Errorf("Failed to run cmd: " + cmd + ", with out: " + string(out) + ", with error: " + err.Error())
+	}
+	return string(out), nil
+}
+
+func GetCmd(cmd string, args []string) string {
+	str := cmd
+	for _, v := range args {
+		str += " " + v
+	}
+	return str
+}

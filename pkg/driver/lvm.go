@@ -3,7 +3,6 @@ package driver
 import (
 	"fmt"
 	"github.com/golang/glog"
-	"os/exec"
 	"strings"
 )
 
@@ -30,8 +29,9 @@ func (lvm *LvmVolume) Create(prefix string) error {
 	}
 	volsz := fmt.Sprintf("%dG", lvm.Size)
 	args := []string{"-L", volsz, lvm.VolumeGroup}
-	glog.Infof("create lv, command %s %v", createCmd, args)
-	out, err := exec.Command(createCmd, args...).CombinedOutput()
+	cmd := GetCmd(createCmd, args)
+	fmt.Printf("create lv, command %s\n", cmd)
+	out, err := Run(cmd)
 	if err != nil {
 		glog.Errorf("create lv error, err=%+v, output=%s", err, string(out))
 		return err
@@ -48,8 +48,9 @@ func (lvm *LvmVolume) Delete(prefix string) error {
 		deleteCmd = fmt.Sprintf("%s lvremove", prefix)
 	}
 	args := []string{"-y", lvm.DevicePath}
-	glog.Infof("remove lv, command %s %v", deleteCmd, args)
-	out, err := exec.Command(deleteCmd, args...).CombinedOutput()
+	cmd := GetCmd(deleteCmd, args)
+	fmt.Printf("remove lv, command %s", cmd)
+	out, err := Run(cmd)
 	if err != nil {
 		glog.Errorf("%v failed to remove lvm, output: %s", err, string(out))
 		return err

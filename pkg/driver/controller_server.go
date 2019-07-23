@@ -1,4 +1,4 @@
-package lvm
+package driver
 
 import (
 	"context"

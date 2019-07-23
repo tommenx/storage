@@ -1,4 +1,4 @@
-package lvm
+package driver
 
 import (
 	"github.com/container-storage-interface/spec/lib/go/csi"
@@ -22,28 +22,34 @@ type lvmDriver struct {
 	cscap            []*csi.ControllerServiceCapability
 }
 
-func NewDriver(nodeID, endpoint string) *lvmDriver {
-	driver := &lvmDriver{}
-	driver.endpoint = endpoint
-	if nodeID == "" {
-		nodeID = "zx"
-		glog.V(4).Infof("use default nodeID: %s", nodeID)
-	}
+type Driver interface {
+	Run()
+}
+
+func NewLvmDriver(nodeID, endpoint string) Driver {
+	d := &lvmDriver{}
+	d.endpoint = endpoint
 	csiDriver := csicommon.NewCSIDriver(DriverName, CSIVersion, nodeID)
-	driver.driver = csiDriver
-	driver.driver.AddControllerServiceCapabilities([]csi.ControllerServiceCapability_RPC_Type{
+	d.driver = csiDriver
+	d.driver.AddControllerServiceCapabilities([]csi.ControllerServiceCapability_RPC_Type{
 		csi.ControllerServiceCapability_RPC_CREATE_DELETE_VOLUME,
 		csi.ControllerServiceCapability_RPC_PUBLISH_UNPUBLISH_VOLUME,
 	})
-	driver.driver.AddVolumeCapabilityAccessModes([]csi.VolumeCapability_AccessMode_Mode{csi.VolumeCapability_AccessMode_SINGLE_NODE_WRITER})
+	d.driver.AddVolumeCapabilityAccessModes([]csi.VolumeCapability_AccessMode_Mode{csi.VolumeCapability_AccessMode_SINGLE_NODE_WRITER})
 
-	driver.idServer = csicommon.NewDefaultIdentityServer(driver.driver)
-	driver.controllerServer = NewControllerServer(driver.driver)
-	nodeServer, err := NewNodeServer(driver.driver, false, executor)
+	d.idServer = csicommon.NewDefaultIdentityServer(d.driver)
+	d.controllerServer = NewControllerServer(d.driver)
+	nodeServer, err := NewNodeServer(d.driver, false)
 	if err != nil {
 		glog.Errorf("lvm can't start node server,err %v \n", err)
 	}
-	driver.nodeServer = nodeServer
+	d.nodeServer = nodeServer
+	return d
+}
 
-	return driver
+func (d *lvmDriver) Run() {
+	glog.Infof("start to run csi-plugin, name:%s, version:%s", DriverName, CSIVersion)
+	server := csicommon.NewNonBlockingGRPCServer()
+	server.Start(d.endpoint, d.idServer, d.controllerServer, d.nodeServer)
+	server.Wait()
 }

@@ -6,6 +6,8 @@ import (
 	"github.com/golang/glog"
 	csicommon "github.com/kubernetes-csi/drivers/pkg/csi-common"
 	"github.com/pborman/uuid"
+	"github.com/tommenx/cdproto/cdpb"
+	"github.com/tommenx/storage/pkg/rpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -71,7 +73,15 @@ func (cs *controllerServer) CreateVolume(ctx context.Context, req *csi.CreateVol
 		glog.Errorf("create logical volume error, err=%+v", err)
 		return nil, status.Errorf(codes.Internal, "create logical volume error, err=%+v", err)
 	}
+	maj, min, ok := GetDeviceNum(vol, prefix)
+	if !ok {
+		glog.Errorf("get device number error")
+		return nil, status.Errorf(codes.Internal, "get device number error")
+	}
+	vol.Maj = maj
+	vol.Min = min
 	volumes[vol.VolumeId] = vol
+	glog.Infof("create volume success,volId=%s", vol.VolumeId)
 	return &csi.CreateVolumeResponse{
 		Volume: &csi.Volume{
 			VolumeId:      vol.VolumeId,
@@ -91,7 +101,8 @@ func (cs *controllerServer) DeleteVolume(ctx context.Context, req *csi.DeleteVol
 	vol, ok := volumes[req.VolumeId]
 	if !ok {
 		glog.Errorf("can not find volume by id, id=%s", req.VolumeId)
-		return nil, status.Errorf(codes.InvalidArgument, "DeleteVolume: can't find volume")
+		//return nil, status.Errorf(codes.InvalidArgument, "DeleteVolume: can't find volume")
+		return &csi.DeleteVolumeResponse{}, nil
 	}
 	err := vol.Delete(prefix)
 	if err != nil {
@@ -101,10 +112,25 @@ func (cs *controllerServer) DeleteVolume(ctx context.Context, req *csi.DeleteVol
 	return &csi.DeleteVolumeResponse{}, nil
 }
 func (cs *controllerServer) ControllerPublishVolume(ctx context.Context, req *csi.ControllerPublishVolumeRequest) (*csi.ControllerPublishVolumeResponse, error) {
-	glog.Infof("do not support ControllerPublishVolume now")
+	vol, ok := volumes[req.VolumeId]
+	if !ok {
+		glog.Errorf("can't find volume by volumeId, id=%s", req.VolumeId)
+	}
+	rpcVolume := &cdpb.Volume{
+		Name:          vol.PVName,
+		VolumeGroup:   vol.VolumeGroup,
+		Uuid:          vol.VolumeId,
+		Maj:           vol.Maj,
+		Min:           vol.Min,
+		LogicalVolume: vol.LVName,
+	}
+	if err := rpc.PutVolume(ctx, rpcVolume.Name, rpcVolume); err != nil {
+		glog.Errorf("rpc put volume error, err=%+v", err)
+		return nil, status.Error(codes.Internal, "rpc put volume error")
+	}
 	return &csi.ControllerPublishVolumeResponse{}, nil
 }
 func (cs *controllerServer) ControllerUnpublishVolume(ctx context.Context, req *csi.ControllerUnpublishVolumeRequest) (*csi.ControllerUnpublishVolumeResponse, error) {
 	glog.Infof("do not support ControllerUnpublishVolume now")
-	return nil, nil
+	return &csi.ControllerUnpublishVolumeResponse{}, nil
 }

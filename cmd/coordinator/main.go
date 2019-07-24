@@ -13,13 +13,13 @@ func init() {
 
 func main() {
 	flag.Parse()
-	db := store.NewEtcd([]string{"127.0.0.1:2379"})
-	path := "/Users/tommenx/kube/config"
+	db := store.NewEtcd([]string{"127.0.0.1:2389"})
+	path := "/root/.kube/config"
 	informerFactory := controller.NewSharedInformerFactory(path)
 	pvController := controller.NewPVController(informerFactory)
-	//stop := make(chan struct{})
-	//go informerFactory.Start(stop)
-	//pvController.Run(stop)
+	stop := make(chan struct{})
+	go informerFactory.Start(stop)
+	pvController.Run(stop)
 	s := server.NewServer(db, pvController)
 	s.Run()
 }

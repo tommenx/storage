@@ -4,6 +4,7 @@ import (
 	"flag"
 	"github.com/golang/glog"
 	"github.com/tommenx/storage/pkg/driver"
+	"github.com/tommenx/storage/pkg/rpc"
 	"os"
 )
 
@@ -14,12 +15,14 @@ var (
 )
 
 func init() {
+	flag.Set("logtostderr", "true")
 	flag.StringVar(&nodeId, "nodeid", "host1", "node id")
 	flag.StringVar(&configPath, "config", "../config.toml", "config file path")
 	flag.StringVar(&endpoint, "endpoint", "unix://tmp/csi.sock", "CSI endpoint")
 }
 func main() {
 	flag.Parse()
+	rpc.Init("127.0.0.1:50051")
 	drivername := "lvmplugin.csi.alibabacloud.com"
 	glog.V(4).Infoln("CSI Driver: ", drivername, nodeId, endpoint)
 	driver := driver.NewLvmDriver(nodeId, endpoint)

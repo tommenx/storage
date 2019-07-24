@@ -183,7 +183,7 @@ func GetLVMVolumeByPVName(volName string) *LvmVolume {
 	return nil
 }
 
-func GetDeviceNum(lvm *LvmVolume, prefix string) (bool, string, string) {
+func GetDeviceNum(lvm *LvmVolume, prefix string) (string, string, bool) {
 	lsblkCmd := fmt.Sprintf("%s %s", prefix, "lsblk")
 	label := fmt.Sprintf("%s-%s", lvm.VolumeGroup, lvm.LVName)
 	args := []string{`--output`, `NAME,MAJ:MIN`}
@@ -198,11 +198,11 @@ func GetDeviceNum(lvm *LvmVolume, prefix string) (bool, string, string) {
 		}
 	}
 	if err != nil {
-		return false, "", ""
+		return "", "", false
 	}
 	if len(dn) == 0 {
-		return false, "", ""
+		return "", "", false
 	}
 	strs := strings.Split(dn, ":")
-	return true, strs[0], strs[1]
+	return strs[0], strs[1], true
 }

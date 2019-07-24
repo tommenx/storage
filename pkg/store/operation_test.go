@@ -113,3 +113,22 @@ func TestPutVolume(t *testing.T) {
 		t.Errorf("put volume error, err=%+v", err)
 	}
 }
+
+func TestGetVolume(t *testing.T) {
+	etcd := NewEtcd([]string{"127.0.0.1:2389"})
+	ctx := context.Background()
+	ns := "default"
+	name := "lvm-pvc-4"
+	val, err := etcd.GetPVC(ctx, ns, name)
+	if err != nil {
+		t.Errorf("get pod resource error, err=%+v", err)
+		return
+	}
+	vol := &cdpb.Volume{}
+	err = proto.Unmarshal(val, vol)
+	if err != nil {
+		t.Errorf("unmarshal pod resource error, err=%+v", err)
+		return
+	}
+	t.Logf("%+v", vol)
+}

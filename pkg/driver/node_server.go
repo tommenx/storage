@@ -81,6 +81,7 @@ func (ns *nodeServer) NodePublishVolume(ctx context.Context, req *csi.NodePublis
 		glog.Errorf("mount from %s to %s error, err=%v", source, targetPath, err)
 		return nil, status.Error(codes.Internal, "mount to target error")
 	}
+
 	return &csi.NodePublishVolumeResponse{}, nil
 }
 
@@ -120,9 +121,10 @@ func (ns *nodeServer) NodeStageVolume(ctx context.Context, req *csi.NodeStageVol
 		return nil, status.Errorf(codes.Internal, "NodeStageVolume: check targetPath mounted error, err= %+v", err)
 	}
 	if mounted {
-		glog.Errorf("NodePulishVolume: %s is already mounted", targetPath)
+		glog.Errorf("NodeStageVolume: %s is already mounted", targetPath)
 		return nil, status.Errorf(codes.Internal, "NodeStageVolume: targetPath already mounted")
 	}
+	glog.Infof("NodeStageVolume:find vol, id=%s", req.VolumeId)
 	vol, ok := volumes[req.VolumeId]
 	if !ok {
 		glog.Errorf("NodeStageVolume: can't find %s in the lvmVols", req.GetVolumeId())

@@ -7,6 +7,7 @@ import (
 	"github.com/tommenx/cdproto/base"
 	"github.com/tommenx/cdproto/cdpb"
 	"github.com/tommenx/storage/pkg/controller"
+	"time"
 )
 
 func (s *server) PutNodeStorage(ctx context.Context, req *cdpb.PutNodeStorageRequest) (*cdpb.PutNodeStorageResponse, error) {
@@ -129,8 +130,12 @@ func (s *server) PutVolume(ctx context.Context, req *cdpb.PutVolumeRequest) (*cd
 			break
 		}
 		namespace, pvc, err = s.pv.GetPVCByPV(pvName)
+		time.Sleep(1 * time.Second)
 		retry--
 	}
+	glog.Infof("retry count = %d", retry)
+	glog.Errorf("now err is %+v", err)
+	glog.Infof("pv info is %s %s", namespace, pvc)
 	if err != nil {
 		glog.Errorf("get bounded pvc error,pv name=%s, err=%+v", pvName, err)
 		rsp.BaseResp.Code = 3

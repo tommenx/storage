@@ -108,8 +108,9 @@ func (m *mounter) Mount(source, target, fsType string, opts ...string) error {
 	if err != nil {
 		return err
 	}
-	glog.Infof("mount command is %s %v", mountCmd, args)
-	out, err := exec.Command(mountCmd, args...).CombinedOutput()
+	cmd := GetCmd(mountCmd, args)
+	glog.Infof("mount command is %s", cmd)
+	out, err := Run(cmd)
 	if err != nil {
 		glog.Errorf("mount failed, err=%+v, output is %s", err, string(out))
 		return err
@@ -126,8 +127,9 @@ func (m *mounter) Umount(target string) error {
 		return errors.New("target is not specified for unmounting the volume")
 	}
 	args := []string{target}
-	glog.Infof("umount command is %s %v", umountCmd, args)
-	out, err := exec.Command(umountCmd, args...).CombinedOutput()
+	cmd := GetCmd(umountCmd, args)
+	glog.Infof("umount command is %s", cmd)
+	out, err := Run(cmd)
 	if err != nil {
 		return fmt.Errorf("unmounting failed: %v cmd: '%s %s' output: %q",
 			err, umountCmd, target, string(out))
@@ -170,4 +172,37 @@ func GetCmd(cmd string, args []string) string {
 		str += " " + v
 	}
 	return str
+}
+
+func GetLVMVolumeByPVName(volName string) *LvmVolume {
+	for _, v := range volumes {
+		if v.PVName == volName {
+			return v
+		}
+	}
+	return nil
+}
+
+func GetDeviceNum(lvm *LvmVolume, prefix string) (bool, string, string) {
+	lsblkCmd := fmt.Sprintf("%s %s", prefix, "lsblk")
+	label := fmt.Sprintf("%s-%s", lvm.VolumeGroup, lvm.LVName)
+	args := []string{`--output`, `NAME,MAJ:MIN`}
+	cmd := GetCmd(lsblkCmd, args)
+	out, err := Run(cmd)
+	lines := strings.Split(string(out), "\n")
+	var dn string
+	for _, line := range lines {
+		if ok := strings.Contains(line, label); ok {
+			cols := strings.Split(strings.Trim(line, " "), " ")
+			dn = cols[len(cols)-1]
+		}
+	}
+	if err != nil {
+		return false, "", ""
+	}
+	if len(dn) == 0 {
+		return false, "", ""
+	}
+	strs := strings.Split(dn, ":")
+	return true, strs[0], strs[1]
 }

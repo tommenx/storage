@@ -1,7 +1,7 @@
 apiVersion: storage.io/v1alpha1
-kind: StorageLabel
-metadata:
-  name: slow
-spec:
-  read_bps_device: 10
-  write_bps_device: 5
+                      kind: StorageLabel
+                      metadata:
+                        name: slow
+                      spec:
+                        read_bps_device: 10
+                        write_bps_device: 5

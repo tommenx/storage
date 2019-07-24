@@ -3,6 +3,7 @@ package driver
 import (
 	"fmt"
 	"github.com/golang/glog"
+	"math"
 	"strings"
 )
 
@@ -14,8 +15,10 @@ type LvmVolume struct {
 	VolumeGroup string //所属的卷组
 	Maj         string // 主设备号
 	Min         string //副设备号
-	Size        int64  //大小，以GB为单位
+	Size        int64  //大小，以B为单位
 }
+
+var GB float64 = 1024 * 1024 * 1024
 
 type Operation interface {
 	Create(prefix string) error
@@ -27,7 +30,8 @@ func (lvm *LvmVolume) Create(prefix string) error {
 	if len(prefix) != 0 {
 		createCmd = fmt.Sprintf("%s lvcreate", prefix)
 	}
-	volsz := fmt.Sprintf("%dG", lvm.Size)
+	sz := int64(math.Ceil(float64(lvm.Size) / GB))
+	volsz := fmt.Sprintf("%dG", sz)
 	args := []string{"-L", volsz, lvm.VolumeGroup}
 	cmd := GetCmd(createCmd, args)
 	fmt.Printf("create lv, command %s\n", cmd)

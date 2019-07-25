@@ -9,11 +9,11 @@ type storageLabelController struct {
 	slLister listers.StorageLabelLister
 }
 
-type storageLabelControllerInterafce interface {
+type StorageLabel interface {
 	GetStorageLabel(name string) (map[string]int64, error)
 }
 
-func NewStorageLabelController(slLister listers.StorageLabelLister) storageLabelControllerInterafce {
+func NewStorageLabelController(slLister listers.StorageLabelLister) StorageLabel {
 	return &storageLabelController{
 		slLister: slLister,
 	}

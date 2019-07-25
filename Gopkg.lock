@@ -99,6 +99,17 @@
   version = "v0.4.0"
 
 [[projects]]
+  digest = "1:b2754ad67d4ed5a0741d69396c6f5cbe1e426a8adc2e8e97e09a1ee5a4621653"
+  name = "github.com/emicklei/go-restful"
+  packages = [
+    ".",
+    "log",
+  ]
+  pruneopts = "UT"
+  revision = "6ac3b8eb89d325e5c750d77f344a6870464d03c3"
+  version = "v2.9.6"
+
+[[projects]]
   digest = "1:ac425d784b13d49b37a5bbed3ce022677f8f3073b216f05d6adcb9303e27fa0f"
   name = "github.com/evanphx/json-patch"
   packages = ["."]
@@ -778,6 +789,7 @@
   input-imports = [
     "github.com/container-storage-interface/spec/lib/go/csi",
     "github.com/docker/docker/client",
+    "github.com/emicklei/go-restful",
     "github.com/gogo/protobuf/proto",
     "github.com/golang/glog",
     "github.com/kubernetes-csi/drivers/pkg/csi-common",

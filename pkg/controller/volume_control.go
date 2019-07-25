@@ -19,7 +19,7 @@ import (
 
 type volumeControl struct {
 	dockerController container.ContainerInterafce
-	slController     storageLabelControllerInterafce
+	slController     StorageLabel
 }
 
 type VolumeControlInterface interface {

@@ -95,10 +95,10 @@ func TestGetPodResource(t *testing.T) {
 }
 
 func TestPutVolume(t *testing.T) {
-	etcd := NewEtcd([]string{"127.0.0.1:2379"})
+	etcd := NewEtcd([]string{"127.0.0.1:2389"})
 	ctx := context.Background()
 	ns := "default"
-	pvc := "lvm-pvc"
+	pvc := "test-pvc"
 	volume := &cdpb.Volume{
 		Maj: "253",
 		Min: "6",

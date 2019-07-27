@@ -5,6 +5,7 @@ import (
 	"github.com/golang/glog"
 	"github.com/tommenx/storage/pkg/client/clientset/versioned"
 	imformers "github.com/tommenx/storage/pkg/client/informers/externalversions"
+	"github.com/tommenx/storage/pkg/consts"
 	corev1 "k8s.io/api/core/v1"
 	kubeinformers "k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
@@ -31,6 +32,21 @@ func NewSharedInformerFactory(path string) kubeinformers.SharedInformerFactory {
 	return informerFactory
 }
 
+func NewCliAndInformer(path string) (kubernetes.Interface, kubeinformers.SharedInformerFactory) {
+	cfg, err := clientcmd.BuildConfigFromFlags("", path)
+	if err != nil {
+		glog.Errorf("create kubernetes config error, err=%+v", err)
+		panic(err)
+	}
+	kubeCli, err := kubernetes.NewForConfig(cfg)
+	if err != nil {
+		glog.Errorf("create kubernetes client error, err=%+v", err)
+		panic(err)
+	}
+	informerFactory := kubeinformers.NewSharedInformerFactory(kubeCli, resyncDuration)
+	return kubeCli, informerFactory
+}
+
 func NewSLInformerFactory(path string) imformers.SharedInformerFactory {
 	cfg, err := clientcmd.BuildConfigFromFlags("", path)
 	if err != nil {
@@ -52,10 +68,15 @@ func GetDockerIdByPod(pod *corev1.Pod) (string, error) {
 	}
 	for _, container := range pod.Status.ContainerStatuses {
 		if container.Name == name {
-			return container.ContainerID, nil
+			//去除开头的docker://
+			if len(container.ContainerID) > 8 {
+				return container.ContainerID[8:], nil
+			} else {
+				return "", errors.New("error container id")
+			}
 		}
 	}
-	return "", ErrNotFound
+	return "", consts.ErrNotFound
 }
 
 func GetPVCName(pod *corev1.Pod) string {

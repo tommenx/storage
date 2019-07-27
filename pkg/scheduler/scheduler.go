@@ -1,11 +1,8 @@
 package scheduler
 
 import (
-	"context"
-	"github.com/golang/glog"
 	informers "github.com/tommenx/storage/pkg/client/informers/externalversions"
 	"github.com/tommenx/storage/pkg/controller"
-	"github.com/tommenx/storage/pkg/rpc"
 	"k8s.io/client-go/tools/cache"
 	schedulerapiv1 "k8s.io/kubernetes/pkg/scheduler/api/v1"
 )
@@ -30,19 +27,21 @@ func NewScheduler(informerFactory informers.SharedInformerFactory) Scheduler {
 }
 
 func (s *scheduler) Filter(args *schedulerapiv1.ExtenderArgs) (*schedulerapiv1.ExtenderFilterResult, error) {
-	nodes := *args.NodeNames
-	ctx := context.Background()
-	nodeStorages, err := rpc.GetNodeStorage(ctx)
-	if err != nil {
-		glog.Errorf("get node storage error,err=%+v", err)
-		return nil, err
-	}
-	storageLabel := args.Pod.Annotations["storage.io/label"]
-	request, err := s.storageLabel.GetStorageLabel(storageLabel)
-	if err != nil {
-		glog.Errorf("get request storage resource error, label=%s, err=%v", storageLabel, err)
-		return nil, err
-	}
+	//nodes := *args.NodeNames
+	//ctx := context.Background()
+	//canSchedule := []string{}
+	//canNotSchedule := []string{}
+	//nodeStorages, err := rpc.GetNodeStorage(ctx)
+	//if err != nil {
+	//	glog.Errorf("get node storage error,err=%+v", err)
+	//	return nil, err
+	//}
+	//storageLabel := args.Pod.Annotations["storage.io/label"]
+	//want, err := s.storageLabel.GetStorageLabel(storageLabel)
+	//if err != nil {
+	//	glog.Errorf("get request storage resource error, label=%s, err=%v", storageLabel, err)
+	//	return nil, err
+	//}
 	return nil, nil
 }
 

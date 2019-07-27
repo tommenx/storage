@@ -6,6 +6,7 @@ import (
 	"github.com/golang/glog"
 	"github.com/tommenx/cdproto/base"
 	"github.com/tommenx/cdproto/cdpb"
+	"github.com/tommenx/storage/pkg/consts"
 	"google.golang.org/grpc"
 )
 
@@ -99,6 +100,8 @@ func DirectPutPodResource(ctx context.Context, pod *cdpb.PodResource) error {
 	return nil
 }
 
+//TODO
+// return value error
 func GetPodResource(ctx context.Context, ns, name string) (*cdpb.PodResource, error) {
 	req := &cdpb.GetPodResourceRequest{
 		Namespace: ns,
@@ -108,6 +111,10 @@ func GetPodResource(ctx context.Context, ns, name string) (*cdpb.PodResource, er
 	if err != nil {
 		glog.Errorf("call get pod resource error, err=%+v", err)
 		return nil, err
+	}
+	if rsp.BaseResp.Code == consts.CodeNotExisted {
+		glog.Infof("%s/%s do not exist in store", ns, name)
+		return nil, consts.ErrNotExist
 	}
 	if rsp.BaseResp.Code != 0 {
 		glog.Errorf("remote server error, code=%d, msg=%v", rsp.BaseResp.Code, rsp.BaseResp.Message)

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: lvm-pvc
+  name: test-pvc
 spec:
   resources:
     requests:

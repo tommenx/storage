@@ -5,7 +5,7 @@ metadata:
   annotations:
     storage.io/storage: enable
     storage.io/label: fast
-    storage.io/docker: nginx
+    storage.io/docker: ubuntu
 spec:
   containers:
     - name: ubuntu
@@ -22,4 +22,4 @@ spec:
   volumes:
     - name: datapv
       persistentVolumeClaim:
-        claimName: lvm-pvc
+        claimName: test-pvc

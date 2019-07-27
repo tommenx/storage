@@ -20,7 +20,7 @@ func init() {
 
 func main() {
 	flag.Parse()
-	rpc.Init("10.48.233.0:50051")
+	rpc.Init("127.0.0.1:50051")
 	path := "/root/.kube/config"
 	cfg, err := clientcmd.BuildConfigFromFlags("", path)
 	if err != nil {

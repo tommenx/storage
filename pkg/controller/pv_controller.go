@@ -1,16 +1,11 @@
 package controller
 
 import (
-	"errors"
 	"github.com/golang/glog"
+	"github.com/tommenx/storage/pkg/consts"
 	"k8s.io/client-go/informers"
 	corelisters "k8s.io/client-go/listers/core/v1"
 	"k8s.io/client-go/tools/cache"
-)
-
-var (
-	ErrNotFound = errors.New("pv not found")
-	ErrNotBound = errors.New("pv not bounded")
 )
 
 type pvController struct {
@@ -46,11 +41,11 @@ func (c *pvController) GetPVCByPV(pvName string) (string, string, error) {
 	}
 	if pv == nil {
 		glog.Errorf("pv not found, pv name=%s", pvName)
-		return "", "", ErrNotFound
+		return "", "", consts.ErrNotFound
 	}
 	if pv.Spec.ClaimRef == nil {
 		glog.Errorf("can not found pv claim, pv name=%s", pvName)
-		return "", "", ErrNotBound
+		return "", "", consts.ErrNotBound
 	}
 	return pv.Spec.ClaimRef.Namespace, pv.Spec.ClaimRef.Name, nil
 }

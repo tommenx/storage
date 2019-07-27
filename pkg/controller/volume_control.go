@@ -10,7 +10,9 @@ import (
 	"context"
 	"errors"
 	"github.com/golang/glog"
+	"github.com/tommenx/cdproto/cdpb"
 	listers "github.com/tommenx/storage/pkg/client/listers/storage.io/v1alpha1"
+	"github.com/tommenx/storage/pkg/consts"
 	"github.com/tommenx/storage/pkg/container"
 	"github.com/tommenx/storage/pkg/isolate"
 	"github.com/tommenx/storage/pkg/rpc"
@@ -45,20 +47,26 @@ func (c *volumeControl) Sync(pod *corev1.Pod) error {
 		glog.Errorf("pod %s/%s do not identify storage label", ns, name)
 		return errors.New("do not identify storage label")
 	}
-	podResource, err := rpc.GetPodResource(ctx, ns, name)
-	if err != nil {
-		glog.Errorf("get pod resource error, pod=%s/%s, err=%+v", ns, name, err)
-		return err
-	}
 	requestResource, err := c.slController.GetStorageLabel(label)
 	if err != nil {
 		glog.Errorf("get storage label error, label=%s, err=%+v", label, err)
 		return err
 	}
-	cgroupParentPath = podResource.CgroupPath
-	dockerId = podResource.DockerId
-	if cgroupParentPath == "" {
+	podResource, err := rpc.GetPodResource(ctx, ns, name)
+	if err != nil && err != consts.ErrNotExist {
+		glog.Errorf("get pod resource error, pod=%s/%s, err=%+v", ns, name, err)
+		return err
+	}
+	if podResource == nil {
+		podResource = &cdpb.PodResource{}
+	}
+	if err != nil {
+		cgroupParentPath = podResource.CgroupPath
 		dockerId = podResource.DockerId
+	}
+
+	if cgroupParentPath == "" || dockerId == "" {
+		//查找对应的docker的id
 		if len(dockerId) == 0 {
 			dockerId, err = GetDockerIdByPod(pod)
 			if err != nil {
@@ -71,8 +79,11 @@ func (c *volumeControl) Sync(pod *corev1.Pod) error {
 			glog.Errorf("get cGroupParentPath error, err=%+v", err)
 			return err
 		}
+		podResource.Namespace = ns
+		podResource.Name = name
 		podResource.CgroupPath = cgroupParentPath
 		podResource.DockerId = dockerId
+		podResource.RequestResource = requestResource
 		err := rpc.DirectPutPodResource(ctx, podResource)
 		if err != nil {
 			glog.Errorf("update pod resource error, err=%+v", err)
@@ -82,7 +93,7 @@ func (c *volumeControl) Sync(pod *corev1.Pod) error {
 	pvc := GetPVCName(pod)
 	if len(pvc) == 0 {
 		glog.Errorf("can't get pvc name, pod=%s", name)
-		return ErrNotFound
+		return consts.ErrNotFound
 	}
 	volume, err := rpc.GetVolume(ctx, ns, pvc)
 	if err != nil {

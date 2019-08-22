@@ -9,7 +9,7 @@ import (
 
 var (
 	prefixBlkioPath = "/sys/fs/cgroup/blkio"
-	KB              = int64(1024 * 1024)
+	MB              = int64(1024 * 1024)
 )
 
 //bps单位是MB,iops的单位是次
@@ -17,7 +17,7 @@ var (
 //read_bps_device 20M
 func SetBlkio(cgroupParent string, dockerId string, requests map[string]int64, maj, min string) error {
 	device := fmt.Sprintf("%s:%s", maj, min)
-	requests = chancgeUnit(requests)
+	requests = parseUnit(requests)
 	path := filepath.Join(prefixBlkioPath, cgroupParent, dockerId)
 	var err error
 	for name, val := range requests {
@@ -37,10 +37,10 @@ func SetBlkio(cgroupParent string, dockerId string, requests map[string]int64, m
 	return err
 }
 
-func chancgeUnit(before map[string]int64) map[string]int64 {
+func parseUnit(before map[string]int64) map[string]int64 {
 	for name, size := range before {
 		if name == "read_bps_device" || name == "write_bps_device" {
-			size = size * KB
+			size = size * MB
 			before[name] = size
 		}
 	}

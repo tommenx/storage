@@ -8,6 +8,12 @@ const (
 	CodeMarshalErr = 2
 	CodeNotFound   = 3
 	CodeNotExisted = 7
+	LevelSSD       = "SSD"
+	LevelNVM       = "NVM"
+	LevelHDD       = "HDD"
+	KindCapability = "capability"
+	KindAllocation = "allocation"
+	KindRemaining  = "remaining"
 )
 
 var (

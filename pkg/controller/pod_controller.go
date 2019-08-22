@@ -73,13 +73,13 @@ func (c *Controller) Run(workers int, stopCh <-chan struct{}) {
 }
 
 func (c *Controller) worker() {
-	for c.processNextWrokItem() {
+	for c.processNextWorkItem() {
 	}
 }
 
 //TODO
 //需要判断不同的错误的类型，从而判断是否需要再次加进限速队列中
-func (c *Controller) processNextWrokItem() bool {
+func (c *Controller) processNextWorkItem() bool {
 	key, quit := c.queue.Get()
 	if quit {
 		return false
@@ -89,8 +89,9 @@ func (c *Controller) processNextWrokItem() bool {
 		if err == consts.ErrRetry {
 			//glog.Infof("Pod: %v, still need sync: %v, requeuing", key.(string), err)
 			c.queue.AddRateLimited(key)
+		} else {
+			glog.Errorf("sync volume error, err=%+v", err)
 		}
-		glog.Errorf("sync volume error, err=%+v", err)
 	}
 	c.queue.Forget(key)
 	return true
@@ -102,6 +103,8 @@ func (c *Controller) sync(key string) error {
 		return err
 	}
 	pod, err := c.podLister.Pods(ns).Get(name)
+	//TODO
+	//Pod被删除，需要上报coordinator恢复资源
 	if kuberror.IsNotFound(err) {
 		glog.Infof("pod has been deleted %v", key)
 		return nil

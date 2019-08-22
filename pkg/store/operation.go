@@ -2,11 +2,9 @@ package store
 
 import (
 	"context"
-	"fmt"
 	"github.com/golang/glog"
 	"github.com/tommenx/storage/pkg/consts"
 	v3 "go.etcd.io/etcd/clientv3"
-	"strings"
 	"time"
 )
 
@@ -26,7 +24,7 @@ type EtcdHandler struct {
 }
 
 type EtcdInterface interface {
-	PutNode(ctx context.Context, node string, val []byte) error
+	PutNodeResource(ctx context.Context, node, kind, level, device string, val []byte) error
 	GetNodeList(ctx context.Context) (map[string][]byte, error)
 	PutPVC(ctx context.Context, ns, pvc string, val []byte) error
 	GetPVC(ctx context.Context, ns, pvc string) ([]byte, error)
@@ -78,9 +76,9 @@ func (h *EtcdHandler) Get(ctx context.Context, key string, prefix bool) (map[str
 	return kvs, nil
 }
 
-func (h *EtcdHandler) PutNode(ctx context.Context, node string, val []byte) error {
-	key := getKey(prefixNode, node)
-	fmt.Printf("key=%v", key)
+func (h *EtcdHandler) PutNodeResource(ctx context.Context, node, kind, level, device string, val []byte) error {
+	key := getKey(prefixNode, node, kind, level, device)
+	glog.Infof("node resource key is %s", key)
 	return h.Put(ctx, key, val)
 
 }
@@ -90,13 +88,7 @@ func (h *EtcdHandler) GetNodeList(ctx context.Context) (map[string][]byte, error
 	if err != nil {
 		return nil, err
 	}
-	res := make(map[string][]byte)
-	for path, val := range kvs {
-		index := strings.LastIndex(path, "/")
-		key := path[index+1:]
-		res[key] = val
-	}
-	return res, nil
+	return kvs, nil
 }
 
 func (h *EtcdHandler) PutPVC(ctx context.Context, ns, pvc string, val []byte) error {

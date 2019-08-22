@@ -2,6 +2,14 @@
 
 
 [[projects]]
+  digest = "1:9f3b30d9f8e0d7040f729b82dcbc8f0dead820a133b3147ce355fc451f32d761"
+  name = "github.com/BurntSushi/toml"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "3012a1dbe2e4bd1391d42b32f0577cb7bbc7f005"
+  version = "v0.3.1"
+
+[[projects]]
   digest = "1:f9ae348e1f793dcf9ed930ed47136a67343dbd6809c5c91391322267f4476892"
   name = "github.com/Microsoft/go-winio"
   packages = ["."]
@@ -316,14 +324,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:62ccabf2731216c70fd9fd9079f017c5c921151443fe906eca909300bd0eaabc"
+  digest = "1:66cf97c6db4b1d58186585f7ea34d895d6b093557d4d6659418c7ef5ae8b31be"
   name = "github.com/tommenx/cdproto"
   packages = [
     "base",
     "cdpb",
   ]
   pruneopts = "UT"
-  revision = "f0d1d1bbca6e3a320de94f39eda56eae6c0f3a0f"
+  revision = "e95a018f1031a8aa7350dd7876dc5c5eaf04ccd6"
 
 [[projects]]
   digest = "1:762df97c14bc6eaa5a01a4dcf50820428ae495e020f3ba80762f217889de302c"
@@ -765,6 +773,18 @@
   revision = "5e22f3d471e6f24ca20becfdffdc6206c7cecac8"
 
 [[projects]]
+  digest = "1:b1508152d79c1db7b3de6b55f3246c3aa0e8b081f23001d15821b5a5bb8cccf3"
+  name = "k8s.io/kubernetes"
+  packages = [
+    "pkg/apis/core",
+    "pkg/scheduler/api",
+    "pkg/scheduler/api/v1",
+  ]
+  pruneopts = "UT"
+  revision = "2d3c76f9091b6bec110a5e63777c332469e0cba2"
+  version = "v1.15.3"
+
+[[projects]]
   digest = "1:14e8a3b53e6d8cb5f44783056b71bb2ca1ac7e333939cc97f3e50b579c920845"
   name = "k8s.io/utils"
   packages = [
@@ -787,6 +807,7 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/BurntSushi/toml",
     "github.com/container-storage-interface/spec/lib/go/csi",
     "github.com/docker/docker/client",
     "github.com/emicklei/go-restful",
@@ -822,6 +843,7 @@
     "k8s.io/client-go/tools/clientcmd",
     "k8s.io/client-go/util/flowcontrol",
     "k8s.io/client-go/util/workqueue",
+    "k8s.io/kubernetes/pkg/scheduler/api/v1",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

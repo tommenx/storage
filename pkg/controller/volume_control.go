@@ -64,7 +64,8 @@ func (c *volumeControl) Sync(pod *corev1.Pod) error {
 		cgroupParentPath = podResource.CgroupPath
 		dockerId = podResource.DockerId
 	}
-
+	//TODO
+	//这里可以区分是第一次上报资源还是后期临时伸缩
 	if cgroupParentPath == "" || dockerId == "" {
 		//查找对应的docker的id
 		if len(dockerId) == 0 {

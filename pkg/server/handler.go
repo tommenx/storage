@@ -10,35 +10,45 @@ import (
 	"time"
 )
 
+//TODO
+//put node update
 func (s *server) PutNodeStorage(ctx context.Context, req *cdpb.PutNodeStorageRequest) (*cdpb.PutNodeStorageResponse, error) {
 	rsp := &cdpb.PutNodeStorageResponse{
 		BaseResp: &base.BaseResp{},
 	}
-	nodeName := req.Node.NodeName
-	val, err := proto.Marshal(req.Node)
-	if err != nil {
-		glog.Errorf("marshal node error, node_name=%s, err=%+v", nodeName, err)
-		rsp.BaseResp.Code = consts.CodeMarshalErr
-		rsp.BaseResp.Message = "marshal node error"
-		return rsp, nil
-	}
-	err = s.db.PutNode(ctx, nodeName, val)
-	if err != nil {
-		glog.Errorf("etcd put node error, node_name=%s, err=%+v", nodeName, err)
-		rsp.BaseResp.Code = consts.CodeEtcdErr
-		rsp.BaseResp.Message = "etcd put node error"
-		return rsp, nil
+	node := req.Name
+	kind := req.Kind
+	storages := req.Node.Storage
+	for _, storage := range storages {
+		device := storage.Name
+		level := storage.Level
+		val, err := proto.Marshal(storage)
+		if err != nil {
+			glog.Errorf("marshal storage error,device=%s,err=%+v", device, err)
+			rsp.BaseResp.Code = consts.CodeMarshalErr
+			rsp.BaseResp.Message = "marshal storage error"
+			return rsp, nil
+		}
+		err = s.db.PutNodeResource(ctx, node, kind, level, device, val)
+		if err != nil {
+			glog.Errorf("etcd put storage %s/%s error, err=%+v", node, device, err)
+			rsp.BaseResp.Code = consts.CodeEtcdErr
+			rsp.BaseResp.Message = "etcd put node error"
+			return rsp, nil
+		}
 	}
 	rsp.BaseResp.Code = consts.CodeOK
 	rsp.BaseResp.Message = "success"
 	return rsp, nil
 }
 
+//TODO
+//split node resource by kind
 func (s *server) GetNodeStorage(ctx context.Context, req *cdpb.GetNodeStorageRequest) (*cdpb.GetNodeStorageResponse, error) {
 	rsp := &cdpb.GetNodeStorageResponse{
 		BaseResp: &base.BaseResp{},
 	}
-	nodeMap := make(map[string]*cdpb.NodeStorage)
+	nodeMap := make(map[string]*cdpb.Node)
 	vals, err := s.db.GetNodeList(ctx)
 	if err != nil {
 		glog.Errorf("etcd get node storage info error, err=%+v", err)
@@ -47,7 +57,7 @@ func (s *server) GetNodeStorage(ctx context.Context, req *cdpb.GetNodeStorageReq
 		return rsp, nil
 	}
 	for node, val := range vals {
-		storage := &cdpb.NodeStorage{}
+		storage := &cdpb.Node{}
 		err = proto.Unmarshal(val, storage)
 		if err != nil {
 			glog.Errorf("unmarshal node storage error, err=%+v", err)
@@ -57,7 +67,7 @@ func (s *server) GetNodeStorage(ctx context.Context, req *cdpb.GetNodeStorageReq
 		}
 		nodeMap[node] = storage
 	}
-	rsp.NodeMap = nodeMap
+	rsp.Nodes = nodeMap
 	rsp.BaseResp.Code = consts.CodeOK
 	rsp.BaseResp.Message = "success"
 	return rsp, nil

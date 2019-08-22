@@ -1,0 +1,14 @@
+[coordinator]
+ip = "127.0.0.1"
+port = "50052"
+
+[node]
+name = "localhost.localdomain"
+
+[node.storage]
+name = "vgdata"
+device = "sdb"
+storage_type="SSD"
+space = 100
+write = 200
+read = 300

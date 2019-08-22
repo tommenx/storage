@@ -21,12 +21,13 @@ func Init(address string) {
 	cli = cdpb.NewCoordinatorClient(conn)
 }
 
-func PutNodeStorage(ctx context.Context, node string, storage []*cdpb.Storage) error {
+func PutNodeStorage(ctx context.Context, node, kind, level string, storage []*cdpb.Storage) error {
 	req := &cdpb.PutNodeStorageRequest{
 		Base: &base.Base{},
-		Node: &cdpb.NodeStorage{},
+		Node: &cdpb.Node{},
 	}
-	req.Node.NodeName = node
+	req.Name = node
+	req.Kind = kind
 	req.Node.Storage = storage
 	rsp, err := cli.PutNodeStorage(ctx, req)
 	if err != nil {
@@ -40,9 +41,10 @@ func PutNodeStorage(ctx context.Context, node string, storage []*cdpb.Storage) e
 	return nil
 }
 
-func GetNodeStorage(ctx context.Context) (map[string]*cdpb.NodeStorage, error) {
+func GetNodeStorage(ctx context.Context, kind string) (map[string]*cdpb.Node, error) {
 	req := &cdpb.GetNodeStorageRequest{
 		Base: &base.Base{},
+		Kind: kind,
 	}
 	rsp, err := cli.GetNodeStorage(ctx, req)
 	if err != nil {
@@ -53,7 +55,7 @@ func GetNodeStorage(ctx context.Context) (map[string]*cdpb.NodeStorage, error) {
 		glog.Errorf("remote server error, coede=%v, msg=%+v", rsp.BaseResp.Code, rsp.BaseResp.Message)
 		return nil, errors.New("remote server get node storage error")
 	}
-	return rsp.NodeMap, nil
+	return rsp.Nodes, nil
 }
 
 func PutPodResource(ctx context.Context, basic map[string]string, request map[string]int64) error {

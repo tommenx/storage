@@ -72,6 +72,7 @@ message PutNodeStorageResponse {
 
 message GetNodeStorageRequest {
     string kind = 1;
+    string node = 2;
     base.Base base = 255;
 }
 

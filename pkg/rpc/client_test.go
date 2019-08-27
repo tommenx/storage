@@ -2,8 +2,8 @@ package rpc
 
 import (
 	"context"
-	"fmt"
 	"github.com/tommenx/cdproto/cdpb"
+	"github.com/tommenx/storage/pkg/consts"
 	"testing"
 )
 
@@ -11,8 +11,8 @@ func TestPutNodeStorage(t *testing.T) {
 	Init(":50051")
 	storage := []*cdpb.Storage{
 		{
-			Name:        "ssd",
-			StorageType: cdpb.StorageType_SSD,
+			Name:  "ssd2",
+			Level: "SSD",
 			Resource: map[string]int64{
 				"read_bps_device":   100,
 				"read_iops_device":  200,
@@ -21,8 +21,8 @@ func TestPutNodeStorage(t *testing.T) {
 			},
 		},
 		{
-			Name:        "hdd",
-			StorageType: cdpb.StorageType_HDD,
+			Name:  "hdd2",
+			Level: "HDD",
 			Resource: map[string]int64{
 				"read_bps_device":   200,
 				"read_iops_device":  300,
@@ -31,70 +31,25 @@ func TestPutNodeStorage(t *testing.T) {
 			},
 		},
 	}
-	err := PutNodeStorage(context.Background(), "bbb", storage)
+	err := PutNodeStorage(context.Background(), "nodebbb", consts.KindCapability, storage)
 	if err != nil {
 		t.Error(err)
 	}
-
 }
 
 func TestGetNodeStorage(t *testing.T) {
 	Init(":50051")
-	nodes, err := GetNodeStorage(context.Background())
+	node := "all"
+	kind := consts.KindCapability
+	infos, err := GetNodeStorage(context.Background(), node, kind)
 	if err != nil {
-		t.Errorf("get node error,err=%+v", err)
+		t.Errorf("error is %+v", err)
+		return
 	}
-	fmt.Printf("node count = %d", len(nodes))
-	for n, v := range nodes {
-		fmt.Printf("node name1 = %s\n", n)
-		fmt.Printf("node name2 = %s\n", v.NodeName)
-		for _, s := range v.Storage {
-			fmt.Printf("%v\n", s.Name)
-			fmt.Printf("%v\n", s.StorageType)
-			fmt.Printf("%v\n", s.Resource)
+	for k, v := range infos {
+		t.Logf("key is %v", k)
+		for _, storage := range v.Storage {
+			t.Logf("%+v", storage)
 		}
 	}
-}
-
-//func TestPutVolume(t *testing.T) {
-//	Init(":50051")
-//	err := PutVolume(context.Background(), "cc", "c", &cdpb.Volume{
-//		Name:        "111",
-//		VolumeGroup: "222",
-//		Uuid:        "333",
-//		Maj:         "444",
-//	})
-//	if err != nil {
-//		t.Error(err)
-//	}
-//}
-
-func TestGetVolume(t *testing.T) {
-	Init(":50051")
-	volume, err := GetVolume(context.Background(), "cc", "c")
-	if err != nil {
-		t.Error(err)
-	}
-	t.Logf("%+v", *volume)
-}
-
-//func TestPutPodResource(t *testing.T) {
-//	Init(":50051")
-//	err := PutPodResource(context.Background(), "ns1", "pod1", map[string]int64{
-//		"122":  122,
-//		"1233": 1233,
-//		"222":  222,
-//	})
-//	if err != nil {
-//		t.Error(err)
-//	}
-//}
-
-func TestGetPodResource(t *testing.T) {
-	Init(":50051")
-	pod, err := GetPodResource(context.Background(), "ns1", "pod1")
-	if err != nil {
-		t.Error(err)
-	}
-	t.Logf("%+v", *pod)
 }

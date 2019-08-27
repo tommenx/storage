@@ -2,7 +2,6 @@ package watcher
 
 import (
 	"context"
-	"github.com/gogo/protobuf/proto"
 	"github.com/golang/glog"
 	"github.com/tommenx/cdproto/cdpb"
 	"github.com/tommenx/storage/pkg/config"
@@ -54,7 +53,7 @@ func ReportRemainingResource(node, device, name, level string) error {
 	}
 	infos := []*cdpb.Storage{}
 	infos = append(infos, info)
-	err = rpc.PutNodeStorage(ctx, node, consts.KindRemaining, level, infos)
+	err = rpc.PutNodeStorage(ctx, node, consts.KindCapability, infos)
 	if err != nil {
 		glog.Errorf("rpc put node storage error, err=%+v", err)
 		return err

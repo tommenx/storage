@@ -2,9 +2,11 @@ package store
 
 import (
 	"context"
+	"fmt"
 	"github.com/golang/glog"
 	"github.com/tommenx/storage/pkg/consts"
 	v3 "go.etcd.io/etcd/clientv3"
+	"strings"
 	"time"
 )
 
@@ -25,7 +27,7 @@ type EtcdHandler struct {
 
 type EtcdInterface interface {
 	PutNodeResource(ctx context.Context, node, kind, level, device string, val []byte) error
-	GetNodeList(ctx context.Context) (map[string][]byte, error)
+	GetNodeResource(ctx context.Context, node, kind string) (map[string][]byte, error)
 	PutPVC(ctx context.Context, ns, pvc string, val []byte) error
 	GetPVC(ctx context.Context, ns, pvc string) ([]byte, error)
 	PutPod(ctx context.Context, ns, name string, val []byte) error
@@ -83,12 +85,35 @@ func (h *EtcdHandler) PutNodeResource(ctx context.Context, node, kind, level, de
 
 }
 
-func (h *EtcdHandler) GetNodeList(ctx context.Context) (map[string][]byte, error) {
-	kvs, err := h.Get(ctx, prefixNode, true)
+func (h *EtcdHandler) GetNodeResource(ctx context.Context, node, kind string) (map[string][]byte, error) {
+	key := ""
+	if node == "all" {
+		key = prefixNode
+	} else {
+		key = getKey(prefixNode, node)
+	}
+	fmt.Printf("key is %+v", key)
+	fmt.Println("node", node)
+	fmt.Println("kind", kind)
+	kvs, err := h.Get(ctx, key, true)
 	if err != nil {
 		return nil, err
 	}
-	return kvs, nil
+	infos := make(map[string][]byte)
+	for k, v := range kvs {
+		fields := strings.FieldsFunc(k, func(r rune) bool {
+			if r == '/' {
+				return true
+			}
+			return false
+		})
+		if fields[3] == kind {
+			if fields[2] == node || node == "all" {
+				infos[fields[2]] = v
+			}
+		}
+	}
+	return infos, nil
 }
 
 func (h *EtcdHandler) PutPVC(ctx context.Context, ns, pvc string, val []byte) error {

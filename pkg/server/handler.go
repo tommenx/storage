@@ -49,15 +49,16 @@ func (s *server) GetNodeStorage(ctx context.Context, req *cdpb.GetNodeStorageReq
 		BaseResp: &base.BaseResp{},
 	}
 	nodeMap := make(map[string]*cdpb.Node)
-	vals, err := s.db.GetNodeList(ctx)
+	vals, err := s.db.GetNodeResource(ctx, req.Node, req.Kind)
 	if err != nil {
 		glog.Errorf("etcd get node storage info error, err=%+v", err)
 		rsp.BaseResp.Code = consts.CodeEtcdErr
 		rsp.BaseResp.Message = "etcd get node list error"
 		return rsp, nil
 	}
-	for node, val := range vals {
-		storage := &cdpb.Node{}
+	for k, val := range vals {
+		storages := []*cdpb.Storage{}
+		storage := &cdpb.Storage{}
 		err = proto.Unmarshal(val, storage)
 		if err != nil {
 			glog.Errorf("unmarshal node storage error, err=%+v", err)
@@ -65,7 +66,10 @@ func (s *server) GetNodeStorage(ctx context.Context, req *cdpb.GetNodeStorageReq
 			rsp.BaseResp.Message = "unmarshal node storage error"
 			return rsp, nil
 		}
-		nodeMap[node] = storage
+		storages = append(storages, storage)
+		node := &cdpb.Node{}
+		node.Storage = storages
+		nodeMap[k] = node
 	}
 	rsp.Nodes = nodeMap
 	rsp.BaseResp.Code = consts.CodeOK

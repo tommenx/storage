@@ -21,7 +21,7 @@ func Init(address string) {
 	cli = cdpb.NewCoordinatorClient(conn)
 }
 
-func PutNodeStorage(ctx context.Context, node, kind, level string, storage []*cdpb.Storage) error {
+func PutNodeStorage(ctx context.Context, node, kind string, storage []*cdpb.Storage) error {
 	req := &cdpb.PutNodeStorageRequest{
 		Base: &base.Base{},
 		Node: &cdpb.Node{},
@@ -41,11 +41,12 @@ func PutNodeStorage(ctx context.Context, node, kind, level string, storage []*cd
 	return nil
 }
 
-func GetNodeStorage(ctx context.Context, kind string) (map[string]*cdpb.Node, error) {
+func GetNodeStorage(ctx context.Context, node, kind string) (map[string]*cdpb.Node, error) {
 	req := &cdpb.GetNodeStorageRequest{
 		Base: &base.Base{},
-		Kind: kind,
 	}
+	req.Kind = kind
+	req.Node = node
 	rsp, err := cli.GetNodeStorage(ctx, req)
 	if err != nil {
 		glog.Errorf("call get node storage error, err=%+v", err)

@@ -83,6 +83,7 @@ message GetNodeStorageResponse {
 
 message PutPodResourceRequest {
     PodResource pod = 1;
+    int32 operation = 2; // 0表示删除，1表示新增
     base.Base base = 255;
 }
 

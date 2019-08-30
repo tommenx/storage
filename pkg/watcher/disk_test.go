@@ -1,6 +1,7 @@
 package watcher
 
 import (
+	"github.com/tommenx/storage/pkg/config"
 	"github.com/tommenx/storage/pkg/rpc"
 	"testing"
 )
@@ -14,7 +15,8 @@ func TestGetRemainingResource(t *testing.T) {
 
 func TestReportRemainingResource(t *testing.T) {
 	rpc.Init(":50051")
-	err := ReportRemainingResource("nodeaaa", "sdb", "ssd1", "SSD")
+	config.Init("../../config.toml")
+	err := ReportRemainingResource()
 	if err != nil {
 		t.Errorf("remaining resource error, err=%+v", err)
 		return

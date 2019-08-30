@@ -17,12 +17,12 @@ type Coordinator struct {
 }
 
 type Storage struct {
-	Name        string `toml:"name"`
-	Device      string `toml:"device"`
-	StorageType string `toml:"storage_type"`
-	Space       int64  `toml:"space"`
-	Write       int64  `toml:"write"`
-	Read        int64  `toml:"read"`
+	Name   string `toml:"name"`
+	Device string `toml:"device"`
+	Level  string `toml:"level"`
+	Space  int64  `toml:"space"`
+	Write  int64  `toml:"write"`
+	Read   int64  `toml:"read"`
 }
 
 type Node struct {
@@ -32,12 +32,11 @@ type Node struct {
 
 var c Config
 
-func Init(path string) error {
+func Init(path string) {
 	if _, err := toml.DecodeFile(path, &c); err != nil {
 		glog.Errorf("read config file error, err=%+v", err)
-		return err
+		panic(err)
 	}
-	return nil
 }
 
 func GetCoordinator() Coordinator {

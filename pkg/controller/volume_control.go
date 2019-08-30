@@ -64,8 +64,6 @@ func (c *volumeControl) Sync(pod *corev1.Pod) error {
 		cgroupParentPath = podResource.CgroupPath
 		dockerId = podResource.DockerId
 	}
-	//TODO
-	//这里可以区分是第一次上报资源还是后期临时伸缩
 	if cgroupParentPath == "" || dockerId == "" {
 		//查找对应的docker的id
 		if len(dockerId) == 0 {
@@ -85,7 +83,7 @@ func (c *volumeControl) Sync(pod *corev1.Pod) error {
 		podResource.CgroupPath = cgroupParentPath
 		podResource.DockerId = dockerId
 		podResource.RequestResource = requestResource
-		err := rpc.DirectPutPodResource(ctx, podResource)
+		err := rpc.DirectPutPodResource(ctx, podResource, consts.OpAdd)
 		if err != nil {
 			glog.Errorf("update pod resource error, err=%+v", err)
 			return err

@@ -324,14 +324,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:d53787b02e69b7f3367092986770db9a01355dec2f9ba74b913a38c5a8eb7db4"
+  digest = "1:7b924f852ebdd11beed556fd9f35a027f7ab525bd01d9c6c43a4fa7e08ab1e15"
   name = "github.com/tommenx/cdproto"
   packages = [
     "base",
     "cdpb",
   ]
   pruneopts = "UT"
-  revision = "f9c0b0d65d28170369504a8064a6a7d9fabc294a"
+  revision = "43fbb4b04cc4f9c5450c4d5ae1ecd6189cc402ad"
 
 [[projects]]
   digest = "1:762df97c14bc6eaa5a01a4dcf50820428ae495e020f3ba80762f217889de302c"

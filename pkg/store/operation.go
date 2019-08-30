@@ -32,6 +32,7 @@ type EtcdInterface interface {
 	GetPVC(ctx context.Context, ns, pvc string) ([]byte, error)
 	PutPod(ctx context.Context, ns, name string, val []byte) error
 	GetPod(ctx context.Context, ns, name string) ([]byte, error)
+	DelPod(ctx context.Context, ns, name string) error
 }
 
 func NewEtcd(endpoints []string) EtcdInterface {
@@ -76,6 +77,15 @@ func (h *EtcdHandler) Get(ctx context.Context, key string, prefix bool) (map[str
 		return nil, consts.ErrNotExist
 	}
 	return kvs, nil
+}
+
+func (h *EtcdHandler) Del(ctx context.Context, key string) error {
+	_, err := h.client.Delete(ctx, key)
+	if err != nil {
+		glog.Errorf("delete key %s error,err=%+v")
+		return err
+	}
+	return nil
 }
 
 func (h *EtcdHandler) PutNodeResource(ctx context.Context, node, kind, level, device string, val []byte) error {
@@ -142,6 +152,16 @@ func (h *EtcdHandler) GetPod(ctx context.Context, ns, name string) ([]byte, erro
 		return nil, err
 	}
 	return kvs[key], nil
+}
+
+func (h *EtcdHandler) DelPod(ctx context.Context, ns, name string) error {
+	key := getKey(prefixPod, ns, name)
+	err := h.Del(ctx, key)
+	if err != nil {
+		glog.Errorf("etcd del %s error, err=%+v", err)
+		return err
+	}
+	return nil
 }
 
 func getKey(prefix string, args ...string) string {

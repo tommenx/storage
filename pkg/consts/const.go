@@ -14,6 +14,8 @@ const (
 	KindCapability = "capability"
 	KindAllocation = "allocation"
 	KindRemaining  = "remaining"
+	OpAdd          = int32(1)
+	OpDel          = int32(0)
 )
 
 var (

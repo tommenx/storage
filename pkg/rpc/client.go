@@ -88,9 +88,10 @@ func PutPodResource(ctx context.Context, basic map[string]string, request map[st
 	return nil
 }
 
-func DirectPutPodResource(ctx context.Context, pod *cdpb.PodResource) error {
+func DirectPutPodResource(ctx context.Context, pod *cdpb.PodResource, op int32) error {
 	req := &cdpb.PutPodResourceRequest{}
 	req.Pod = pod
+	req.Operation = op
 	rsp, err := cli.PutPodResource(ctx, req)
 	if err != nil {
 		glog.Errorf("call put pod resource error, err=%+v", err)

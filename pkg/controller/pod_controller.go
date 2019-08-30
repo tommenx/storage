@@ -1,12 +1,15 @@
 package controller
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/golang/glog"
+	"github.com/tommenx/cdproto/cdpb"
 	informers "github.com/tommenx/storage/pkg/client/informers/externalversions"
 	listers "github.com/tommenx/storage/pkg/client/listers/storage.io/v1alpha1"
 	"github.com/tommenx/storage/pkg/consts"
+	"github.com/tommenx/storage/pkg/rpc"
 	corev1 "k8s.io/api/core/v1"
 	kuberror "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/util/wait"
@@ -103,10 +106,16 @@ func (c *Controller) sync(key string) error {
 		return err
 	}
 	pod, err := c.podLister.Pods(ns).Get(name)
-	//TODO
-	//Pod被删除，需要上报coordinator恢复资源
+	//删除pod
 	if kuberror.IsNotFound(err) {
-		glog.Infof("pod has been deleted %v", key)
+		pod := cdpb.PodResource{}
+		pod.Name = name
+		pod.Namespace = ns
+		err := rpc.DirectPutPodResource(context.Background(), nil, consts.OpDel)
+		if err != nil {
+			glog.Errorf("pod %s/%s deleted error, err=%+v", ns, name, err)
+			return err
+		}
 		return nil
 	}
 	if err != nil {

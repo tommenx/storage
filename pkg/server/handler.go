@@ -83,6 +83,24 @@ func (s *server) PutPodResource(ctx context.Context, req *cdpb.PutPodResourceReq
 	}
 	pod := req.Pod.Name
 	namespace := req.Pod.Namespace
+	op := req.Operation
+	wrong := false
+	if op == consts.OpDel {
+		//获取pod的情况
+		//为所在节点的Allocation添加资源
+		//返回结果
+		info, err := s.getPodResource(ctx, pod, namespace)
+		if err != nil {
+			glog.Errorf("get %s/%s error, err= %+v", namespace, pod, err)
+			wrong = true
+		}
+		node := info.Node
+
+	} else if op == consts.OpAdd {
+
+	} else {
+
+	}
 	val, err := proto.Marshal(req.Pod)
 	if err != nil {
 		glog.Errorf("marshal node error, pod_name=%s, err=%+v", pod, err)
@@ -108,23 +126,8 @@ func (s *server) GetPodResource(ctx context.Context, req *cdpb.GetPodResourceReq
 	}
 	namespace := req.Namespace
 	podName := req.Pod
-	val, err := s.db.GetPod(ctx, namespace, podName)
+	pod, err := s.getPodResource(ctx, podName, namespace)
 	if err != nil {
-		glog.Errorf("etcd get pod error, name=%s, err=%+v", podName, err)
-		rsp.BaseResp.Code = consts.CodeEtcdErr
-		rsp.BaseResp.Message = "etcd get pod error"
-
-		if err == consts.ErrNotExist {
-			rsp.BaseResp.Code = consts.CodeNotExisted
-			rsp.BaseResp.Message = "pod do not exist in store"
-		}
-
-		return rsp, nil
-	}
-	pod := &cdpb.PodResource{}
-	err = proto.UnmarshalMerge(val, pod)
-	if err != nil {
-		glog.Errorf("unmarshal pod error, err=%+v", err)
 		rsp.BaseResp.Code = consts.CodeMarshalErr
 		rsp.BaseResp.Message = "unmarshal pod error"
 		return rsp, nil
@@ -133,6 +136,21 @@ func (s *server) GetPodResource(ctx context.Context, req *cdpb.GetPodResourceReq
 	rsp.BaseResp.Code = consts.CodeOK
 	rsp.BaseResp.Message = "success"
 	return rsp, nil
+}
+
+func (s *server) getPodResource(ctx context.Context, podName, namespace string) (*cdpb.PodResource, error) {
+	val, err := s.db.GetPod(ctx, namespace, podName)
+	if err != nil {
+		return nil, err
+		glog.Errorf("etcd get pod error, name=%s, err=%+v", podName, err)
+	}
+	pod := &cdpb.PodResource{}
+	err = proto.UnmarshalMerge(val, pod)
+	if err != nil {
+		glog.Errorf("unmarshal pod error, err=%+v", err)
+		return nil, err
+	}
+	return pod, nil
 }
 
 func (s *server) PutVolume(ctx context.Context, req *cdpb.PutVolumeRequest) (*cdpb.PutVolumeResponse, error) {

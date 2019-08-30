@@ -40,7 +40,7 @@ func TestPutNodeStorage(t *testing.T) {
 func TestGetNodeStorage(t *testing.T) {
 	Init(":50051")
 	node := "all"
-	kind := consts.KindCapability
+	kind := consts.KindRemaining
 	infos, err := GetNodeStorage(context.Background(), node, kind)
 	if err != nil {
 		t.Errorf("error is %+v", err)

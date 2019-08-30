@@ -7,8 +7,8 @@ name = "localhost.localdomain"
 
 [node.storage]
 name = "vgdata"
-device = "sdb"
-storage_type="SSD"
+device = "sda"
+level ="SSD"
 space = 100
 write = 200
 read = 300

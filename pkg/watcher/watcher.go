@@ -7,17 +7,15 @@ import (
 
 type watcher struct {
 	period time.Duration
-	device string
 }
 
 type Watcher interface {
 	Run(stopCh <-chan struct{})
 }
 
-func NewWatcher(period time.Duration, device string) Watcher {
+func NewWatcher(period time.Duration) Watcher {
 	return &watcher{
 		period: period,
-		device: device,
 	}
 }
 
@@ -26,7 +24,7 @@ func (w *watcher) Run(stopCh <-chan struct{}) {
 	for {
 		select {
 		case <-ticker.C:
-			GetRemainingResource(w.device)
+			_ = ReportRemainingResource()
 		case <-stopCh:
 			glog.Info("stop report node storage info")
 			return

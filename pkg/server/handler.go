@@ -12,30 +12,36 @@ import (
 
 //TODO
 //put node update
-func (s *server) PutNodeStorage(ctx context.Context, req *cdpb.PutNodeStorageRequest) (*cdpb.PutNodeStorageResponse, error) {
-	rsp := &cdpb.PutNodeStorageResponse{
-		BaseResp: &base.BaseResp{},
-	}
-	node := req.Name
-	kind := req.Kind
-	storages := req.Node.Storage
+func (s *server) putNodeStorage(ctx context.Context, nodeName, kind string, node *cdpb.Node) error {
+	storages := node.Storage
 	for _, storage := range storages {
 		device := storage.Name
 		level := storage.Level
 		val, err := proto.Marshal(storage)
 		if err != nil {
 			glog.Errorf("marshal storage error,device=%s,err=%+v", device, err)
-			rsp.BaseResp.Code = consts.CodeMarshalErr
-			rsp.BaseResp.Message = "marshal storage error"
-			return rsp, nil
+			return err
 		}
-		err = s.db.PutNodeResource(ctx, node, kind, level, device, val)
+		err = s.db.PutNodeResource(ctx, nodeName, kind, level, device, val)
 		if err != nil {
 			glog.Errorf("etcd put storage %s/%s error, err=%+v", node, device, err)
-			rsp.BaseResp.Code = consts.CodeEtcdErr
-			rsp.BaseResp.Message = "etcd put node error"
-			return rsp, nil
+			return err
 		}
+	}
+	return nil
+
+}
+func (s *server) PutNodeStorage(ctx context.Context, req *cdpb.PutNodeStorageRequest) (*cdpb.PutNodeStorageResponse, error) {
+	rsp := &cdpb.PutNodeStorageResponse{
+		BaseResp: &base.BaseResp{},
+	}
+	node := req.Name
+	kind := req.Kind
+	err := s.putNodeStorage(ctx, node, kind, req.Node)
+	if err != nil {
+		rsp.BaseResp.Code = consts.CodeEtcdErr
+		rsp.BaseResp.Message = "internal error"
+		return rsp, nil
 	}
 	rsp.BaseResp.Code = consts.CodeOK
 	rsp.BaseResp.Message = "success"
@@ -43,18 +49,13 @@ func (s *server) PutNodeStorage(ctx context.Context, req *cdpb.PutNodeStorageReq
 }
 
 //TODO
-//split node resource by kind
-func (s *server) GetNodeStorage(ctx context.Context, req *cdpb.GetNodeStorageRequest) (*cdpb.GetNodeStorageResponse, error) {
-	rsp := &cdpb.GetNodeStorageResponse{
-		BaseResp: &base.BaseResp{},
-	}
+//最好后期改为map[node-name]map[level]*storage
+func (s *server) getNodeStorage(ctx context.Context, node, kind string) (map[string]*cdpb.Node, error) {
 	nodeMap := make(map[string]*cdpb.Node)
-	vals, err := s.db.GetNodeResource(ctx, req.Node, req.Kind)
+	vals, err := s.db.GetNodeResource(ctx, node, kind)
 	if err != nil {
 		glog.Errorf("etcd get node storage info error, err=%+v", err)
-		rsp.BaseResp.Code = consts.CodeEtcdErr
-		rsp.BaseResp.Message = "etcd get node list error"
-		return rsp, nil
+		return nil, err
 	}
 	for k, val := range vals {
 		storages := []*cdpb.Storage{}
@@ -62,19 +63,45 @@ func (s *server) GetNodeStorage(ctx context.Context, req *cdpb.GetNodeStorageReq
 		err = proto.Unmarshal(val, storage)
 		if err != nil {
 			glog.Errorf("unmarshal node storage error, err=%+v", err)
-			rsp.BaseResp.Code = consts.CodeMarshalErr
-			rsp.BaseResp.Message = "unmarshal node storage error"
-			return rsp, nil
+			return nil, err
 		}
 		storages = append(storages, storage)
 		node := &cdpb.Node{}
 		node.Storage = storages
 		nodeMap[k] = node
 	}
+	return nodeMap, nil
+
+}
+
+func (s *server) GetNodeStorage(ctx context.Context, req *cdpb.GetNodeStorageRequest) (*cdpb.GetNodeStorageResponse, error) {
+	rsp := &cdpb.GetNodeStorageResponse{
+		BaseResp: &base.BaseResp{},
+	}
+	nodeMap, err := s.getNodeStorage(ctx, req.Node, req.Kind)
+	if err != nil {
+		rsp.BaseResp.Code = consts.CodeEtcdErr
+		rsp.BaseResp.Message = "internal error"
+		return rsp, nil
+	}
 	rsp.Nodes = nodeMap
 	rsp.BaseResp.Code = consts.CodeOK
 	rsp.BaseResp.Message = "success"
 	return rsp, nil
+}
+
+func (s *server) putPodResource(ctx context.Context, ns, podName string, pod *cdpb.PodResource) error {
+	val, err := proto.Marshal(pod)
+	if err != nil {
+		glog.Errorf("marshal node error, pod_name=%s, err=%+v", pod, err)
+		return err
+	}
+	err = s.db.PutPod(ctx, ns, podName, val)
+	if err != nil {
+		glog.Errorf("etcd put pod info error, err=%+v", err)
+		return err
+	}
+	return nil
 }
 
 func (s *server) PutPodResource(ctx context.Context, req *cdpb.PutPodResourceRequest) (*cdpb.PutPodResourceResponse, error) {
@@ -84,7 +111,9 @@ func (s *server) PutPodResource(ctx context.Context, req *cdpb.PutPodResourceReq
 	pod := req.Pod.Name
 	namespace := req.Pod.Namespace
 	op := req.Operation
-	wrong := false
+	failed := false
+	node := &cdpb.Node{}
+	nodename := ""
 	if op == consts.OpDel {
 		//获取pod的情况
 		//为所在节点的Allocation添加资源
@@ -92,27 +121,58 @@ func (s *server) PutPodResource(ctx context.Context, req *cdpb.PutPodResourceReq
 		info, err := s.getPodResource(ctx, pod, namespace)
 		if err != nil {
 			glog.Errorf("get %s/%s error, err= %+v", namespace, pod, err)
-			wrong = true
+			failed = true
 		}
-		node := info.Node
-
+		nodename = info.Node
+		nodes, err := s.getNodeStorage(ctx, nodename, consts.KindAllocation)
+		if err != nil {
+			glog.Errorf("get %s resource error, err=%+v", nodename, err)
+			failed = true
+		}
+		node = nodes[nodename]
+		for index, storage := range node.Storage {
+			if storage.Level == info.Level {
+				for k, request := range info.RequestResource {
+					node.Storage[index].Resource[k] += request
+				}
+			}
+		}
 	} else if op == consts.OpAdd {
-
-	} else {
-
+		nodename = req.Pod.Node
+		nodes, err := s.getNodeStorage(ctx, nodename, consts.KindAllocation)
+		if err != nil {
+			glog.Errorf("get %s resource error, err=%+v", nodename, err)
+			failed = true
+		}
+		node = nodes[nodename]
+		for index, storage := range node.Storage {
+			if storage.Level == req.Pod.Level {
+				for key, request := range req.Pod.RequestResource {
+					node.Storage[index].Resource[key] -= request
+				}
+			}
+		}
 	}
-	val, err := proto.Marshal(req.Pod)
-	if err != nil {
-		glog.Errorf("marshal node error, pod_name=%s, err=%+v", pod, err)
-		rsp.BaseResp.Code = consts.CodeMarshalErr
-		rsp.BaseResp.Message = "marshal pod error"
+	if failed {
+		rsp.BaseResp.Code = consts.CodeInternalErr
+		rsp.BaseResp.Message = "calculate resource error"
 		return rsp, nil
 	}
-	err = s.db.PutPod(ctx, namespace, pod, val)
+	err := s.putNodeStorage(ctx, nodename, consts.KindAllocation, node)
 	if err != nil {
-		glog.Errorf("etcd put pod info error, err=%+v", err)
+		glog.Errorf("put node storage error, err=%+v", err)
 		rsp.BaseResp.Code = consts.CodeEtcdErr
-		rsp.BaseResp.Message = "etcd put pod info error"
+		rsp.BaseResp.Message = "put node storage error"
+		return rsp, nil
+	}
+	if op == consts.OpAdd {
+		err = s.putPodResource(ctx, namespace, pod, req.Pod)
+	} else {
+		err = s.db.DelPod(ctx, namespace, pod)
+	}
+	if err != nil {
+		rsp.BaseResp.Code = consts.CodeInternalErr
+		rsp.BaseResp.Message = "internal error"
 		return rsp, nil
 	}
 	rsp.BaseResp.Code = consts.CodeOK

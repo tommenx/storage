@@ -14,8 +14,8 @@ func init() {
 
 func main() {
 	flag.Parse()
-	db := store.NewEtcd([]string{"127.0.0.1:2389"})
-	path := "/root/.kube/config"
+	db := store.NewEtcd([]string{"127.0.0.1:2379"})
+	path := "/Users/tommenx/.kube/config"
 	//cli, informerFactory := controller.NewCliAndInformer(path)
 	_, informerFactory := controller.NewCliAndInformer(path)
 	pvController := controller.NewPVController(informerFactory)

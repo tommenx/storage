@@ -10,6 +10,7 @@ type watcher struct {
 }
 
 type Watcher interface {
+	InitResource() error
 	Run(stopCh <-chan struct{})
 }
 
@@ -17,6 +18,10 @@ func NewWatcher(period time.Duration) Watcher {
 	return &watcher{
 		period: period,
 	}
+}
+
+func (w *watcher) InitResource() error {
+	return InitReport()
 }
 
 func (w *watcher) Run(stopCh <-chan struct{}) {

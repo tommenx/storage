@@ -139,16 +139,23 @@ func (s *server) PutPodResource(ctx context.Context, req *cdpb.PutPodResourceReq
 		}
 	} else if op == consts.OpAdd {
 		nodename = req.Pod.Node
+		glog.Infof("add pod, node is %+v", nodename)
 		nodes, err := s.getNodeStorage(ctx, nodename, consts.KindAllocation)
+		for k, v := range nodes {
+			glog.Infof("key is %+v", k)
+			glog.Infof("val is %+v", *v)
+		}
 		if err != nil {
 			glog.Errorf("get %s resource error, err=%+v", nodename, err)
 			failed = true
 		}
-		node = nodes[nodename]
-		for index, storage := range node.Storage {
-			if storage.Level == req.Pod.Level {
-				for key, request := range req.Pod.RequestResource {
-					node.Storage[index].Resource[key] -= request
+		if !failed {
+			node = nodes[nodename]
+			for index, storage := range node.Storage {
+				if storage.Level == req.Pod.Level {
+					for key, request := range req.Pod.RequestResource {
+						node.Storage[index].Resource[key] -= request
+					}
 				}
 			}
 		}
@@ -187,6 +194,11 @@ func (s *server) GetPodResource(ctx context.Context, req *cdpb.GetPodResourceReq
 	namespace := req.Namespace
 	podName := req.Pod
 	pod, err := s.getPodResource(ctx, podName, namespace)
+	if err == consts.ErrNotExist {
+		rsp.BaseResp.Code = consts.CodeNotExisted
+		rsp.BaseResp.Message = "pod do not exist in store"
+		return rsp, nil
+	}
 	if err != nil {
 		rsp.BaseResp.Code = consts.CodeMarshalErr
 		rsp.BaseResp.Message = "unmarshal pod error"
@@ -202,7 +214,6 @@ func (s *server) getPodResource(ctx context.Context, podName, namespace string) 
 	val, err := s.db.GetPod(ctx, namespace, podName)
 	if err != nil {
 		return nil, err
-		glog.Errorf("etcd get pod error, name=%s, err=%+v", podName, err)
 	}
 	pod := &cdpb.PodResource{}
 	err = proto.UnmarshalMerge(val, pod)

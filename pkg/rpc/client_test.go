@@ -39,7 +39,7 @@ func TestPutNodeStorage(t *testing.T) {
 
 func TestGetNodeStorage(t *testing.T) {
 	Init(":50051")
-	node := "all"
+	node := "localhost.localdomain"
 	kind := consts.KindAllocation
 	infos, err := GetNodeStorage(context.Background(), node, kind)
 	if err != nil {

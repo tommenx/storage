@@ -22,7 +22,7 @@ func init() {
 }
 func main() {
 	flag.Parse()
-	rpc.Init("127.0.0.1:50051")
+	rpc.Init("10.48.144.34:50051")
 	drivername := "lvmplugin.csi.alibabacloud.com"
 	glog.V(4).Infoln("CSI Driver: ", drivername, nodeId, endpoint)
 	driver := driver.NewLvmDriver(nodeId, endpoint)

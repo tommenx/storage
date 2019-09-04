@@ -7,7 +7,7 @@ spec:
   - ReadWriteOnce
   resources:
     requests:
-      storage: 2Gi
+      storage: 10Gi
   storageClassName: csi-lvm
 ---
 apiVersion: apps/v1
@@ -24,6 +24,10 @@ spec:
     metadata:
       labels:
         app: nginx
+    annotations:
+      storage.io/storage: enable
+      storage.io/label: fast
+      storage.io/docker: nginx
     spec:
       containers:
       - name: nginx

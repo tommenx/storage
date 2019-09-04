@@ -22,17 +22,19 @@ import (
 type volumeControl struct {
 	dockerController container.ContainerInterafce
 	slController     StorageLabel
+	nodeName         string
 }
 
 type VolumeControlInterface interface {
 	Sync(pod *corev1.Pod) error
 }
 
-func NewVolumeControl(slLister listers.StorageLabelLister) VolumeControlInterface {
+func NewVolumeControl(slLister listers.StorageLabelLister, nodeName string) VolumeControlInterface {
 	slController := NewStorageLabelController(slLister)
 	return &volumeControl{
 		dockerController: container.NewClient(),
 		slController:     slController,
+		nodeName:         nodeName,
 	}
 }
 
@@ -80,6 +82,7 @@ func (c *volumeControl) Sync(pod *corev1.Pod) error {
 		}
 		podResource.Namespace = ns
 		podResource.Name = name
+		podResource.Node = c.nodeName
 		podResource.CgroupPath = cgroupParentPath
 		podResource.DockerId = dockerId
 		podResource.RequestResource = requestResource

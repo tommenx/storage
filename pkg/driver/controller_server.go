@@ -115,6 +115,7 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context, req *cs
 	vol, ok := volumes[req.VolumeId]
 	if !ok {
 		glog.Errorf("can't find volume by volumeId, id=%s", req.VolumeId)
+		return &csi.ControllerPublishVolumeResponse{}, nil
 	}
 	rpcVolume := &cdpb.Volume{
 		Name:          vol.PVName,

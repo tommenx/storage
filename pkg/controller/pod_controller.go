@@ -50,7 +50,7 @@ func NewController(
 		},
 		DeleteFunc: c.deletePod,
 	})
-	control := NewVolumeControl(slInformer.Lister())
+	control := NewVolumeControl(slInformer.Lister(), nodeName)
 	c.podLister = podInformer.Lister()
 	c.podListerSynced = podInformer.Informer().HasSynced
 	c.slLister = slInformer.Lister()
@@ -108,10 +108,10 @@ func (c *Controller) sync(key string) error {
 	pod, err := c.podLister.Pods(ns).Get(name)
 	//删除pod
 	if kuberror.IsNotFound(err) {
-		pod := cdpb.PodResource{}
+		pod := &cdpb.PodResource{}
 		pod.Name = name
 		pod.Namespace = ns
-		err := rpc.DirectPutPodResource(context.Background(), nil, consts.OpDel)
+		err := rpc.DirectPutPodResource(context.Background(), pod, consts.OpDel)
 		if err != nil {
 			glog.Errorf("pod %s/%s deleted error, err=%+v", ns, name, err)
 			return err

@@ -69,3 +69,26 @@ func ReportRemainingResource() error {
 	}
 	return nil
 }
+
+func InitReport() error {
+	nodeName := config.GetNode().Name
+	level := config.GetNode().Storage.Level
+	volumeGroup := config.GetNode().Storage.Name
+	capability := config.GetCapability()
+	ctx := context.Background()
+	info := &cdpb.Storage{
+		Name:     volumeGroup,
+		Level:    level,
+		Resource: capability,
+	}
+	infos := []*cdpb.Storage{}
+	infos = append(infos, info)
+	err := rpc.PutNodeStorage(ctx, nodeName, consts.KindRemaining, infos)
+	err = rpc.PutNodeStorage(ctx, nodeName, consts.KindCapability, infos)
+	err = rpc.PutNodeStorage(ctx, nodeName, consts.KindAllocation, infos)
+	if err != nil {
+		glog.Errorf("rpc put node storage error, err=%+v", err)
+		return err
+	}
+	return nil
+}

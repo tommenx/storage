@@ -15,7 +15,7 @@ type StorageLabel struct {
 }
 
 type StorageLabelSpec struct {
-	ReadBpsDevice   int64 `json:"read_iops_device,omitempty"`
+	ReadBpsDevice   int64 `json:"read_bps_device,omitempty"`
 	ReadIopsDevice  int64 `json:"read_iops_device,omitempty"`
 	WriteBpsDevice  int64 `json:"write_bps_device,omitempty"`
 	WriteIopsDevice int64 `json:"write_iops_device,omitempty"`

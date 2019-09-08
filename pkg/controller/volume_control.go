@@ -50,6 +50,7 @@ func (c *volumeControl) Sync(pod *corev1.Pod) error {
 		return errors.New("do not identify storage label")
 	}
 	requestResource, err := c.slController.GetStorageLabel(label)
+	glog.Infof("storage label %s is %+v", label, requestResource)
 	if err != nil {
 		glog.Errorf("get storage label error, label=%s, err=%+v", label, err)
 		return err
@@ -86,6 +87,7 @@ func (c *volumeControl) Sync(pod *corev1.Pod) error {
 		podResource.CgroupPath = cgroupParentPath
 		podResource.DockerId = dockerId
 		podResource.RequestResource = requestResource
+		podResource.Level = consts.LevelSSD
 		err := rpc.DirectPutPodResource(ctx, podResource, consts.OpAdd)
 		if err != nil {
 			glog.Errorf("update pod resource error, err=%+v", err)

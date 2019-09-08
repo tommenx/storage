@@ -112,7 +112,7 @@ func (s *server) PutPodResource(ctx context.Context, req *cdpb.PutPodResourceReq
 	namespace := req.Pod.Namespace
 	op := req.Operation
 	failed := false
-	node := &cdpb.Node{}
+	nodeResult := &cdpb.Node{}
 	nodename := ""
 	if op == consts.OpDel {
 		//获取pod的情况
@@ -129,11 +129,11 @@ func (s *server) PutPodResource(ctx context.Context, req *cdpb.PutPodResourceReq
 			glog.Errorf("get %s resource error, err=%+v", nodename, err)
 			failed = true
 		}
-		node = nodes[nodename]
-		for index, storage := range node.Storage {
+		nodeResult = nodes[nodename]
+		for index, storage := range nodeResult.Storage {
 			if storage.Level == info.Level {
 				for k, request := range info.RequestResource {
-					node.Storage[index].Resource[k] += request
+					nodeResult.Storage[index].Resource[k] += request
 				}
 			}
 		}
@@ -141,31 +141,35 @@ func (s *server) PutPodResource(ctx context.Context, req *cdpb.PutPodResourceReq
 		nodename = req.Pod.Node
 		glog.Infof("add pod, node is %+v", nodename)
 		nodes, err := s.getNodeStorage(ctx, nodename, consts.KindAllocation)
-		for k, v := range nodes {
-			glog.Infof("key is %+v", k)
-			glog.Infof("val is %+v", *v)
-		}
 		if err != nil {
 			glog.Errorf("get %s resource error, err=%+v", nodename, err)
 			failed = true
 		}
+		glog.Infof("req pod info is %+v", *req.Pod)
 		if !failed {
-			node = nodes[nodename]
-			for index, storage := range node.Storage {
-				if storage.Level == req.Pod.Level {
-					for key, request := range req.Pod.RequestResource {
-						node.Storage[index].Resource[key] -= request
+			if node, ok := nodes[nodename]; ok {
+				for index, storage := range node.Storage {
+					if storage.Level == req.Pod.Level {
+						for key, request := range req.Pod.RequestResource {
+							node.Storage[index].Resource[key] -= request
+							glog.Infof("request %s : %d", key, request)
+							glog.Infof("%s %d", key, node.Storage[index].Resource[key])
+						}
 					}
 				}
+				nodeResult = node
+			} else {
+				glog.Infof("can't get node %s info", nodename)
 			}
 		}
 	}
 	if failed {
+		glog.Errorf("cal resource error,node=%s", nodename)
 		rsp.BaseResp.Code = consts.CodeInternalErr
 		rsp.BaseResp.Message = "calculate resource error"
 		return rsp, nil
 	}
-	err := s.putNodeStorage(ctx, nodename, consts.KindAllocation, node)
+	err := s.putNodeStorage(ctx, nodename, consts.KindAllocation, nodeResult)
 	if err != nil {
 		glog.Errorf("put node storage error, err=%+v", err)
 		rsp.BaseResp.Code = consts.CodeEtcdErr

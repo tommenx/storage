@@ -111,6 +111,7 @@ func (c *Controller) sync(key string) error {
 		pod := &cdpb.PodResource{}
 		pod.Name = name
 		pod.Namespace = ns
+		pod.Level = consts.LevelSSD
 		err := rpc.DirectPutPodResource(context.Background(), pod, consts.OpDel)
 		if err != nil {
 			glog.Errorf("pod %s/%s deleted error, err=%+v", ns, name, err)

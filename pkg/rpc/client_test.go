@@ -59,9 +59,9 @@ func TestPutPodResource(t *testing.T) {
 	Init(":50051")
 
 	pod := &cdpb.PodResource{
-		Name:      "test1",
+		Name:      "test-pod",
 		Namespace: "default",
-		Node:      "nodeaaa",
+		Node:      "localhost.localdomain",
 		RequestResource: map[string]int64{
 			"read_bps_device":  10,
 			"write_bps_device": 20,

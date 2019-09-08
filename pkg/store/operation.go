@@ -90,7 +90,7 @@ func (h *EtcdHandler) Del(ctx context.Context, key string) error {
 
 func (h *EtcdHandler) PutNodeResource(ctx context.Context, node, kind, level, device string, val []byte) error {
 	key := getKey(prefixNode, node, kind, level, device)
-	glog.Infof("node resource key is %s", key)
+	fmt.Println("node resource key is ", key)
 	return h.Put(ctx, key, val)
 
 }

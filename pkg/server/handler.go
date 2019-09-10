@@ -152,8 +152,6 @@ func (s *server) PutPodResource(ctx context.Context, req *cdpb.PutPodResourceReq
 					if storage.Level == req.Pod.Level {
 						for key, request := range req.Pod.RequestResource {
 							node.Storage[index].Resource[key] -= request
-							glog.Infof("request %s : %d", key, request)
-							glog.Infof("%s %d", key, node.Storage[index].Resource[key])
 						}
 					}
 				}

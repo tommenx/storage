@@ -11,7 +11,6 @@ import (
 	"errors"
 	"github.com/golang/glog"
 	"github.com/tommenx/cdproto/cdpb"
-	listers "github.com/tommenx/storage/pkg/client/listers/storage.io/v1alpha1"
 	"github.com/tommenx/storage/pkg/consts"
 	"github.com/tommenx/storage/pkg/container"
 	"github.com/tommenx/storage/pkg/isolate"
@@ -22,6 +21,7 @@ import (
 type volumeControl struct {
 	dockerController container.ContainerInterafce
 	slController     StorageLabel
+	pvcController    PVCControlInterface
 	nodeName         string
 }
 
@@ -29,11 +29,11 @@ type VolumeControlInterface interface {
 	Sync(pod *corev1.Pod) error
 }
 
-func NewVolumeControl(slLister listers.StorageLabelLister, nodeName string) VolumeControlInterface {
-	slController := NewStorageLabelController(slLister)
+func NewVolumeControl(slController StorageLabel, pvcController PVCControlInterface, nodeName string) VolumeControlInterface {
 	return &volumeControl{
 		dockerController: container.NewClient(),
 		slController:     slController,
+		pvcController:    pvcController,
 		nodeName:         nodeName,
 	}
 }
@@ -44,12 +44,23 @@ func (c *volumeControl) Sync(pod *corev1.Pod) error {
 	ctx := context.Background()
 	cgroupParentPath := ""
 	dockerId := ""
+	pvc := GetPVCName(pod)
+	if len(pvc) == 0 {
+		glog.Errorf("can't get pvc name, pod=%s", name)
+		return consts.ErrNotFound
+	}
+	volume, err := rpc.GetVolume(ctx, ns, pvc)
+	if err != nil {
+		glog.Errorf("get volume error, pvc=%s, err=%+v", pvc, err)
+		return err
+	}
 	label, ok := pod.Annotations["storage.io/label"]
 	if !ok {
 		glog.Errorf("pod %s/%s do not identify storage label", ns, name)
 		return errors.New("do not identify storage label")
 	}
 	requestResource, err := c.slController.GetStorageLabel(label)
+	requestResource["space"] = int64(volume.Size)
 	glog.Infof("storage label %s is %+v", label, requestResource)
 	if err != nil {
 		glog.Errorf("get storage label error, label=%s, err=%+v", label, err)
@@ -94,16 +105,7 @@ func (c *volumeControl) Sync(pod *corev1.Pod) error {
 			return err
 		}
 	}
-	pvc := GetPVCName(pod)
-	if len(pvc) == 0 {
-		glog.Errorf("can't get pvc name, pod=%s", name)
-		return consts.ErrNotFound
-	}
-	volume, err := rpc.GetVolume(ctx, ns, pvc)
-	if err != nil {
-		glog.Errorf("get volume error, pvc=%s, err=%+v", pvc, err)
-		return err
-	}
+
 	err = isolate.SetBlkio(cgroupParentPath, dockerId, requestResource, volume.Maj, volume.Min)
 	if err != nil {
 		glog.Errorf("set volume isolate error, err=%+v", err)

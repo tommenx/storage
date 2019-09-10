@@ -25,6 +25,11 @@ type Operation interface {
 	Delete(prefix string) error
 }
 
+func (lvm *LvmVolume) GetFormatSize() int32 {
+	sz := int64(math.Ceil(float64(lvm.Size) / GB))
+	return int32(sz)
+}
+
 func (lvm *LvmVolume) Create(prefix string) error {
 	createCmd := "lvcreate"
 	if len(prefix) != 0 {

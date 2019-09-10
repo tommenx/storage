@@ -124,6 +124,7 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context, req *cs
 		Maj:           vol.Maj,
 		Min:           vol.Min,
 		LogicalVolume: vol.LVName,
+		Size:          vol.GetFormatSize(),
 	}
 	if err := rpc.PutVolume(ctx, rpcVolume.Name, rpcVolume); err != nil {
 		glog.Errorf("rpc put volume error, err=%+v", err)

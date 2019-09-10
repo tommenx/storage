@@ -39,6 +39,7 @@ func NewController(
 	nodeName string) *Controller {
 	podInformer := kubeInformerFactory.Core().V1().Pods()
 	slInformer := informerFactory.Storage().V1alpha1().StorageLabels()
+	pvcInformer := kubeInformerFactory.Core().V1().PersistentVolumeClaims()
 	c := &Controller{
 		kubeClient: kubeCli,
 		queue:      workqueue.NewRateLimitingQueue(workqueue.DefaultControllerRateLimiter()),
@@ -50,7 +51,9 @@ func NewController(
 		},
 		DeleteFunc: c.deletePod,
 	})
-	control := NewVolumeControl(slInformer.Lister(), nodeName)
+	slControl := NewStorageLabelController(slInformer.Lister())
+	pvcControl := NewRealPVCControl(pvcInformer.Lister())
+	control := NewVolumeControl(slControl, pvcControl, nodeName)
 	c.podLister = podInformer.Lister()
 	c.podListerSynced = podInformer.Informer().HasSynced
 	c.slLister = slInformer.Lister()

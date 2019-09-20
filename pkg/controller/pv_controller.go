@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/golang/glog"
 	"github.com/tommenx/storage/pkg/consts"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/informers"
 	corelisters "k8s.io/client-go/listers/core/v1"
 	"k8s.io/client-go/tools/cache"
@@ -16,6 +17,7 @@ type pvController struct {
 type PVController interface {
 	Run(stop <-chan struct{})
 	GetPVCByPV(pvName string) (string, string, error)
+	GetPV(volumeId string) (*corev1.PersistentVolume, error)
 }
 
 func NewPVController(informerFactory informers.SharedInformerFactory) PVController {
@@ -48,4 +50,8 @@ func (c *pvController) GetPVCByPV(pvName string) (string, string, error) {
 		return "", "", consts.ErrNotBound
 	}
 	return pv.Spec.ClaimRef.Namespace, pv.Spec.ClaimRef.Name, nil
+}
+
+func (c *pvController) GetPV(volumeId string) (*corev1.PersistentVolume, error) {
+	return c.pvLister.Get(volumeId)
 }

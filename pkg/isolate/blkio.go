@@ -21,7 +21,7 @@ func SetBlkio(cgroupParent string, dockerId string, requests map[string]int64, m
 	path := filepath.Join(prefixBlkioPath, cgroupParent, dockerId)
 	var err error
 	for name, val := range requests {
-		if val == 0 {
+		if val == 0 || name == "space" {
 			continue
 		}
 		name := fmt.Sprintf("blkio.throttle.%s", name)

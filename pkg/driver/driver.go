@@ -4,6 +4,7 @@ import (
 	"github.com/container-storage-interface/spec/lib/go/csi"
 	"github.com/golang/glog"
 	csicommon "github.com/kubernetes-csi/drivers/pkg/csi-common"
+	"github.com/tommenx/storage/pkg/controller"
 )
 
 const (
@@ -26,7 +27,7 @@ type Driver interface {
 	Run()
 }
 
-func NewLvmDriver(nodeID, endpoint string) Driver {
+func NewLvmDriver(nodeID, endpoint string, path string) Driver {
 	d := &lvmDriver{}
 	d.endpoint = endpoint
 	csiDriver := csicommon.NewCSIDriver(DriverName, CSIVersion, nodeID)
@@ -39,7 +40,12 @@ func NewLvmDriver(nodeID, endpoint string) Driver {
 
 	d.idServer = csicommon.NewDefaultIdentityServer(d.driver)
 	d.controllerServer = NewControllerServer(d.driver)
-	nodeServer, err := NewNodeServer(d.driver, false)
+	_, informerFactory := controller.NewCliAndInformer(path)
+	pvController := controller.NewPVController(informerFactory)
+	stop := make(chan struct{})
+	go informerFactory.Start(stop)
+	pvController.Run(stop)
+	nodeServer, err := NewNodeServer(d.driver, false, pvController)
 	if err != nil {
 		glog.Errorf("lvm can't start node server,err %v \n", err)
 	}

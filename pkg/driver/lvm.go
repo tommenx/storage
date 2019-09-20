@@ -9,8 +9,6 @@ import (
 
 type LvmVolume struct {
 	PVName      string //pv的名字
-	LVName      string //逻辑卷的名字
-	VolumeId    string //存储卷分配的id
 	DevicePath  string //设备的地址
 	VolumeGroup string //所属的卷组
 	Maj         string // 主设备号
@@ -25,9 +23,9 @@ type Operation interface {
 	Delete(prefix string) error
 }
 
-func (lvm *LvmVolume) GetFormatSize() int32 {
+func (lvm *LvmVolume) GetFormatSize() int64 {
 	sz := int64(math.Ceil(float64(lvm.Size) / GB))
-	return int32(sz)
+	return sz
 }
 
 func (lvm *LvmVolume) Create(prefix string) error {
@@ -37,7 +35,7 @@ func (lvm *LvmVolume) Create(prefix string) error {
 	}
 	sz := int64(math.Ceil(float64(lvm.Size) / GB))
 	volsz := fmt.Sprintf("%dG", sz)
-	args := []string{"-L", volsz, lvm.VolumeGroup}
+	args := []string{"-L", volsz, "-n", lvm.PVName, lvm.VolumeGroup}
 	cmd := GetCmd(createCmd, args)
 	fmt.Printf("create lv, command %s\n", cmd)
 	out, err := Run(cmd)
@@ -45,9 +43,8 @@ func (lvm *LvmVolume) Create(prefix string) error {
 		glog.Errorf("create lv error, err=%+v, output=%s", err, string(out))
 		return err
 	}
-	lvm.LVName = extractLVName(string(out))
-	lvm.DevicePath = fmt.Sprintf("/dev/%s/%s", lvm.VolumeGroup, lvm.LVName)
-	glog.Infof("success create lvm [%s] in vg [%s] with the path %s", lvm.LVName, lvm.VolumeGroup, lvm.DevicePath)
+	lvm.DevicePath = fmt.Sprintf("/dev/%s/%s", lvm.VolumeGroup, lvm.PVName)
+	glog.Infof("success create lvm [%s] in vg [%s] with the path %s", lvm.PVName, lvm.VolumeGroup, lvm.DevicePath)
 	return nil
 }
 
@@ -64,7 +61,7 @@ func (lvm *LvmVolume) Delete(prefix string) error {
 		glog.Errorf("%v failed to remove lvm, output: %s", err, string(out))
 		return err
 	}
-	glog.Infof("success remove lvm [%s] in vg [%s] with the path %s", lvm.LVName, lvm.VolumeGroup, lvm.DevicePath)
+	glog.Infof("success remove lvm [%s] in vg [%s] with the path %s", lvm.PVName, lvm.VolumeGroup, lvm.DevicePath)
 	return nil
 }
 

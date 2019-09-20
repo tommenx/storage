@@ -2,22 +2,18 @@ package driver
 
 import "testing"
 
-func TestCreate(t *testing.T) {
-	lvm := &LvmVolume{}
-	lvm.Size = 1
-	lvm.VolumeGroup = "vgdata"
-	err := lvm.Create("nsenter --mount=/proc/1/ns/mnt")
-	if err != nil {
-		t.Errorf("err is %+v", err)
-	}
-	t.Logf("lvm is %+v", lvm)
+func TestGetDeviceNum(t *testing.T) {
+	maj, min, ok := GetDeviceNum("vgdata", "pvc--c908ed3b--db73--11e9--be62--309c23e8d374", "")
+	t.Logf("maj=%v, min=%v, ok=%v", maj, min, ok)
 }
 
-func TestDelete(t *testing.T) {
-	lvm := &LvmVolume{}
-	lvm.DevicePath = "/dev/vgdata/lvol8"
-	err := lvm.Delete("nsenter --mount=/proc/1/ns/mnt")
+func TestParseExistLogicalVolume(t *testing.T) {
+	volumeId := "pvc-1e598eb8-db80-11e9-be62-309c23e8d374"
+	volumeGroup := "vgdata"
+	vol, err := parseExistLogicalVolume(volumeId, volumeGroup, "")
 	if err != nil {
-		t.Errorf("err is %+v", err)
+		t.Error(err)
+	} else {
+		t.Logf("%+v", *vol)
 	}
 }

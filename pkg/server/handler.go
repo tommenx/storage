@@ -145,7 +145,6 @@ func (s *server) PutPodResource(ctx context.Context, req *cdpb.PutPodResourceReq
 			glog.Errorf("get %s resource error, err=%+v", nodename, err)
 			failed = true
 		}
-		glog.Infof("req pod info is %+v", *req.Pod)
 		if !failed {
 			if node, ok := nodes[nodename]; ok {
 				for index, storage := range node.Storage {

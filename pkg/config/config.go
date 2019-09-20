@@ -51,5 +51,6 @@ func GetCapability() map[string]int64 {
 	data := make(map[string]int64)
 	data["write_bps_device"] = c.Node.Storage.Write
 	data["read_bps_device"] = c.Node.Storage.Read
+	data["space"] = c.Node.Storage.Space
 	return data
 }

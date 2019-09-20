@@ -40,7 +40,6 @@ func GetRemainingResource(device string) (map[string]int64, error) {
 	for k, v := range remaining {
 		remaining[k] = v - used[k]
 	}
-	//fmt.Printf("reamianing %+v \n", remaining)
 	return remaining, nil
 }
 

@@ -174,18 +174,10 @@ func GetCmd(cmd string, args []string) string {
 	return str
 }
 
-func GetLVMVolumeByPVName(volName string) *LvmVolume {
-	for _, v := range volumes {
-		if v.PVName == volName {
-			return v
-		}
-	}
-	return nil
-}
-
-func GetDeviceNum(lvm *LvmVolume, prefix string) (string, string, bool) {
+func GetDeviceNum(volumeGroup, volumeId, prefix string) (string, string, bool) {
 	lsblkCmd := fmt.Sprintf("%s %s", prefix, "lsblk")
-	label := fmt.Sprintf("%s-%s", lvm.VolumeGroup, lvm.LVName)
+	volumeId = strings.ReplaceAll(volumeId, "-", "--")
+	label := fmt.Sprintf("%s-%s", volumeGroup, volumeId)
 	args := []string{`--output`, `NAME,MAJ:MIN`}
 	cmd := GetCmd(lsblkCmd, args)
 	out, err := Run(cmd)
@@ -195,6 +187,7 @@ func GetDeviceNum(lvm *LvmVolume, prefix string) (string, string, bool) {
 		if ok := strings.Contains(line, label); ok {
 			cols := strings.Split(strings.Trim(line, " "), " ")
 			dn = cols[len(cols)-1]
+			break
 		}
 	}
 	if err != nil {

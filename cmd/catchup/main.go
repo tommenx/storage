@@ -13,18 +13,20 @@ import (
 )
 
 var (
-	nodeName string
+	nodeName   string
+	configPath string
 )
 
 func init() {
 	flag.Set("logtostderr", "true")
 	flag.StringVar(&nodeName, "node", "localhost.localdomain", "use to identify node")
+	flag.StringVar(&configPath, "config", "./config.toml", "use to set config file path")
 }
 
 func main() {
 	flag.Parse()
-	rpc.Init("10.48.144.34:50051")
-	config.Init("../../config.toml")
+	rpc.Init("10.48.247.109:50051")
+	config.Init(configPath)
 	path := "/root/.kube/config"
 	cfg, err := clientcmd.BuildConfigFromFlags("", path)
 	if err != nil {
@@ -40,8 +42,7 @@ func main() {
 	informerFactory := controller.NewSLInformerFactory(path)
 	controller := controller.NewController(clienset, kubeInformerFactory, informerFactory, nodeName)
 	watch := watcher.NewWatcher(time.Second * 60)
-	err = watch.InitResource()
-	if err != nil {
+	if err := watch.InitResource(); err != nil {
 		glog.Errorf("init node resource error, err=%+v", err)
 		panic(err)
 	}

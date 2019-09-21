@@ -18,13 +18,13 @@ var (
 )
 
 type server struct {
-	exec api.Exec
+	exec api.Executor
 	lock sync.Mutex
 }
 
 // StartServer starts a kubernetes scheduler extender http apiserver
 func StartServer(kubeCli kubernetes.Interface, informerFactory informers.SharedInformerFactory, port int) {
-	e := api.NewExec(kubeCli, informerFactory)
+	e := api.NewExecutor(kubeCli, informerFactory)
 	svr := &server{exec: e}
 
 	stopCh := make(chan struct{})
@@ -36,9 +36,14 @@ func StartServer(kubeCli kubernetes.Interface, informerFactory informers.SharedI
 		Consumes(restful.MIME_JSON).
 		Produces(restful.MIME_JSON)
 
-	ws.Route(ws.POST("/setpod").To(svr.setPod).
+	ws.Route(ws.POST("/setonepod").To(svr.setOnePod).
 		Doc("set pod").
 		Operation("SetPod").
+		Writes(types.SetPodResult{}))
+
+	ws.Route(ws.POST("/setbatchpod").To(svr.setBatchPod).
+		Doc("set batch pod").
+		Operation("SetBatchPod").
 		Writes(types.SetPodResult{}))
 
 	ws.Route(ws.GET("/hello").To(svr.hello).
@@ -47,20 +52,39 @@ func StartServer(kubeCli kubernetes.Interface, informerFactory informers.SharedI
 		Writes(types.HelloResult{}))
 
 	restful.Add(ws)
-	fmt.Println("aaaaaa")
-
 	glog.Infof("start scheduler extender server, listening on 0.0.0.0:%d", port)
 	glog.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), nil))
 }
 
-func (svr *server) setPod(req *restful.Request, resp *restful.Response) {
-
-	args := &types.SetPodArgs{}
+func (svr *server) setBatchPod(req *restful.Request, resp *restful.Response) {
+	svr.lock.Lock()
+	defer svr.lock.Unlock()
+	args := &types.SetBatchPodArgs{}
 	if err := req.ReadEntity(args); err != nil {
 		errorResponse(resp, errFailToRead)
 		return
 	}
-	setPodResult, err := svr.exec.SetPod(args)
+	setPodResult, err := svr.exec.SetBatchPod(args)
+	if err != nil {
+		errorResponse(resp, restful.NewError(http.StatusInternalServerError,
+			fmt.Sprintf("unable to filter nodes: %v", err)))
+		return
+	}
+
+	if err := resp.WriteEntity(setPodResult); err != nil {
+		errorResponse(resp, errFailToWrite)
+	}
+}
+
+func (svr *server) setOnePod(req *restful.Request, resp *restful.Response) {
+	svr.lock.Lock()
+	defer svr.lock.Unlock()
+	args := &types.SetOnePodArgs{}
+	if err := req.ReadEntity(args); err != nil {
+		errorResponse(resp, errFailToRead)
+		return
+	}
+	setPodResult, err := svr.exec.SetOnePod(args)
 	if err != nil {
 		errorResponse(resp, restful.NewError(http.StatusInternalServerError,
 			fmt.Sprintf("unable to filter nodes: %v", err)))

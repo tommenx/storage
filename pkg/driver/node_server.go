@@ -7,7 +7,9 @@ import (
 	"github.com/container-storage-interface/spec/lib/go/csi"
 	"github.com/golang/glog"
 	csicommon "github.com/kubernetes-csi/drivers/pkg/csi-common"
+	"github.com/tommenx/cdproto/cdpb"
 	"github.com/tommenx/storage/pkg/controller"
+	"github.com/tommenx/storage/pkg/rpc"
 	"github.com/tommenx/storage/pkg/utils"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -227,7 +229,18 @@ func (ns *nodeServer) NodePublishVolume(ctx context.Context, req *csi.NodePublis
 		return nil, status.Error(codes.Internal, "mount to target error")
 	}
 	vol, _ = parseExistLogicalVolume(volumeId, volumeGroup, "")
-	glog.Infof("%+v", *vol)
+	rpcVolume := &cdpb.Volume{
+		Name:          vol.PVName,
+		VolumeGroup:   vol.VolumeGroup,
+		Maj:           vol.Maj,
+		Min:           vol.Min,
+		LogicalVolume: volumeId,
+		Size:          int32(vol.GetFormatSize()),
+	}
+	if err := rpc.PutVolume(ctx, volumeId, rpcVolume); err != nil {
+		glog.Errorf("rpc put volume error, err=%+v", err)
+		return nil, status.Error(codes.Internal, "rpc put volume error")
+	}
 	return &csi.NodePublishVolumeResponse{}, nil
 }
 

@@ -1,8 +1,14 @@
 package types
 
-type SetPodArgs struct {
+type SetOnePodArgs struct {
 	Namespace    string `json:"namespace"`
 	Pod          string `json:"pod"`
+	StorageLabel string `json:"storage_label"`
+}
+
+type SetBatchPodArgs struct {
+	Tag          string `json:"tag"`
+	Val          string `json:"val"`
 	StorageLabel string `json:"storage_label"`
 }
 

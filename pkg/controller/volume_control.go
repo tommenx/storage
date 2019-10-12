@@ -8,13 +8,13 @@ package controller
 
 import (
 	"context"
-	"errors"
 	"github.com/golang/glog"
 	"github.com/tommenx/cdproto/cdpb"
 	"github.com/tommenx/storage/pkg/consts"
 	"github.com/tommenx/storage/pkg/container"
 	"github.com/tommenx/storage/pkg/isolate"
 	"github.com/tommenx/storage/pkg/rpc"
+	"github.com/tommenx/storage/pkg/utils"
 	corev1 "k8s.io/api/core/v1"
 )
 
@@ -38,6 +38,15 @@ func NewVolumeControl(slController StorageLabel, pvcController PVCControlInterfa
 	}
 }
 
+func getRequestResource(pod *corev1.Pod) map[string]int64 {
+	request := make(map[string]int64)
+	write, _ := pod.Annotations["storage.io/write"]
+	read, _ := pod.Annotations["storage.io/read"]
+	request["write_bps_device"] = utils.Int64(write)
+	request["read_bps_device"] = utils.Int64(read)
+	return request
+}
+
 func (c *volumeControl) Sync(pod *corev1.Pod) error {
 	ns := pod.Namespace
 	name := pod.Name
@@ -54,18 +63,14 @@ func (c *volumeControl) Sync(pod *corev1.Pod) error {
 		glog.Errorf("get volume error, pvc=%s, err=%+v", pvc, err)
 		return err
 	}
-	label, ok := pod.Annotations["storage.io/label"]
-	if !ok {
-		glog.Errorf("pod %s/%s do not identify storage label", ns, name)
-		return errors.New("do not identify storage label")
-	}
-	requestResource, err := c.slController.GetStorageLabel(label)
+	//label, ok := pod.Annotations["storage.io/label"]
+	//if !ok {
+	//	glog.Errorf("pod %s/%s do not identify storage label", ns, name)
+	//	return errors.New("do not identify storage label")
+	//}
+	//requestResource, err := c.slController.GetStorageLabel(label)
+	requestResource := getRequestResource(pod)
 	requestResource["space"] = int64(volume.Size)
-	glog.Infof("storage label %s is %+v", label, requestResource)
-	if err != nil {
-		glog.Errorf("get storage label error, label=%s, err=%+v", label, err)
-		return err
-	}
 	podResource, err := rpc.GetPodResource(ctx, ns, name)
 	if err != nil && err != consts.ErrNotExist {
 		glog.Errorf("get pod resource error, pod=%s/%s, err=%+v", ns, name, err)

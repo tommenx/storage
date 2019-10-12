@@ -185,9 +185,11 @@ func (c *Controller) updatePod(old, cur interface{}) {
 	if curPod.ResourceVersion == oldPod.ResourceVersion {
 		return
 	}
-	oldLabel, _ := oldPod.Annotations["storage.io/label"]
-	curLabel, _ := curPod.Annotations["storage.io/label"]
-	if oldLabel == curLabel && oldPod.Spec.NodeName == curPod.Spec.NodeName {
+	oldRead, _ := oldPod.Annotations["storage.io/read"]
+	curRead, _ := curPod.Annotations["storage.io/read"]
+	oldWrite, _ := oldPod.Annotations["storage.io/write"]
+	curWrite, _ := curPod.Annotations["storage.io/write"]
+	if oldRead == curRead && oldWrite == curWrite && oldPod.Spec.NodeName == curPod.Spec.NodeName {
 		return
 	}
 	if enable := c.checkResolve(curPod); enable {

@@ -46,7 +46,7 @@ func (e *executor) SetBatchPod(args *types.SetBatchPodArgs) (*types.SetPodResult
 	val := args.Val
 	selector := make(map[string]string)
 	selector[tag] = val
-	err := e.podControl.SetBatchPod(selector, args.StorageLabel)
+	err := e.podControl.SetBatchPod(selector, args.Read, args.Write)
 	if err != nil {
 		glog.Errorf("set pods %s:%s label error, err=%+v", tag, val, err)
 		resp.Code = 2
@@ -61,11 +61,9 @@ func (e *executor) SetBatchPod(args *types.SetBatchPodArgs) (*types.SetPodResult
 func (e *executor) SetOnePod(args *types.SetOnePodArgs) (*types.SetPodResult, error) {
 	resp := &types.SetPodResult{}
 	ns := args.Namespace
-	name := args.Pod
-	label := args.StorageLabel
-	err := e.podControl.SetOnePod(ns, name, label)
+	err := e.podControl.SetOnePod(ns, args.Requests)
 	if err != nil {
-		glog.Errorf("update pod %s/%s annotation error, err=%s", ns, name, err.Error())
+		glog.Errorf("update pod annotation error, err=%s", err.Error())
 		resp.Code = 2
 		resp.Message = "update pod annotation error"
 		return resp, nil

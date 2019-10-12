@@ -13,19 +13,21 @@ import (
 )
 
 var (
-	nodeName   string
-	configPath string
+	nodeName    string
+	configPath  string
+	coordinator string
 )
 
 func init() {
 	flag.Set("logtostderr", "true")
 	flag.StringVar(&nodeName, "node", "localhost.localdomain", "use to identify node")
 	flag.StringVar(&configPath, "config", "./config.toml", "use to set config file path")
+	flag.StringVar(&coordinator, "coordinator", "10.48.247.109:50051", "coordinator url")
 }
 
 func main() {
 	flag.Parse()
-	rpc.Init("10.48.247.109:50051")
+	rpc.Init(coordinator)
 	config.Init(configPath)
 	path := "/root/.kube/config"
 	cfg, err := clientcmd.BuildConfigFromFlags("", path)
@@ -49,7 +51,7 @@ func main() {
 	stopCh := make(chan struct{})
 	go kubeInformerFactory.Start(stopCh)
 	go informerFactory.Start(stopCh)
-	go watch.Run(stopCh)
+	//go watch.Run(stopCh)
 	// 添加监控接口
 	controller.Run(1, stopCh)
 }

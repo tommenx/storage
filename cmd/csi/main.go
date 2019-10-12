@@ -9,9 +9,10 @@ import (
 )
 
 var (
-	endpoint   string
-	nodeId     string
-	configPath string
+	endpoint    string
+	nodeId      string
+	configPath  string
+	coordinator string
 )
 
 func init() {
@@ -19,10 +20,11 @@ func init() {
 	flag.StringVar(&nodeId, "nodeid", "host1", "node id")
 	flag.StringVar(&configPath, "config", "../config.toml", "config file path")
 	flag.StringVar(&endpoint, "endpoint", "unix://tmp/csi.sock", "CSI endpoint")
+	flag.StringVar(&coordinator, "coordinator", "10.48.247.109:50051", "coordinator path")
 }
 func main() {
 	flag.Parse()
-	rpc.Init("10.48.247.109:50051")
+	rpc.Init(coordinator)
 	drivername := "lvmplugin.csi.alibabacloud.com"
 	glog.V(4).Infoln("CSI Driver: ", drivername, nodeId, endpoint)
 	path := "/root/.kube/config"

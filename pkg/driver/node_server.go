@@ -229,6 +229,7 @@ func (ns *nodeServer) NodePublishVolume(ctx context.Context, req *csi.NodePublis
 		return nil, status.Error(codes.Internal, "mount to target error")
 	}
 	vol, _ = parseExistLogicalVolume(volumeId, volumeGroup, "")
+	glog.Infof("%+v", vol)
 	rpcVolume := &cdpb.Volume{
 		Name:          vol.PVName,
 		VolumeGroup:   vol.VolumeGroup,

@@ -122,9 +122,15 @@ func (s *server) PutPodResource(ctx context.Context, req *cdpb.PutPodResourceReq
 		if err != nil {
 			glog.Errorf("get %s/%s error, err= %+v", namespace, pod, err)
 			failed = true
+			glog.Errorf("cal resource error,node=%s", nodename)
+			rsp.BaseResp.Code = consts.CodeInternalErr
+			rsp.BaseResp.Message = "calculate resource error"
+			return rsp, nil
 		}
+
 		nodename = info.Node
 		nodes, err := s.getNodeStorage(ctx, nodename, consts.KindAllocation)
+
 		if err != nil {
 			glog.Errorf("get %s resource error, err=%+v", nodename, err)
 			failed = true

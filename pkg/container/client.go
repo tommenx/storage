@@ -15,7 +15,7 @@ type ContainerInterafce interface {
 }
 
 func NewClient() ContainerInterafce {
-	cli, err := client.NewClientWithOpts(client.WithVersion("1.39"))
+	cli, err := client.NewClientWithOpts(client.WithVersion("1.38"))
 	if err != nil {
 		glog.Errorf("create docker client error, err=%+v", err)
 		panic(err)

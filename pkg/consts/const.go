@@ -2,6 +2,9 @@ package consts
 
 import "errors"
 
+// key : /storage/bounded/pod-name val : pv-name
+// key : /stroage/check/pod-name: val : io-util
+
 const (
 	CodeOK          = 0
 	CodeEtcdErr     = 1
@@ -17,6 +20,8 @@ const (
 	KindRemaining   = "remaining"
 	OpAdd           = int32(1)
 	OpDel           = int32(0)
+	KeyBounded      = "/storage/bounded/"
+	KeyCheck        = "/storage/check/"
 )
 
 var (

@@ -1,13 +1,16 @@
 package api
 
 import (
+	"context"
 	"github.com/golang/glog"
 	"github.com/tommenx/storage/pkg/api/types"
 	"github.com/tommenx/storage/pkg/controller"
+	"github.com/tommenx/storage/pkg/store"
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
 	corelisters "k8s.io/client-go/listers/core/v1"
 	"k8s.io/client-go/tools/cache"
+	"strings"
 )
 
 type executor struct {
@@ -15,15 +18,17 @@ type executor struct {
 	podLister       corelisters.PodLister
 	podListerSynced cache.InformerSynced
 	podControl      controller.PodControlInterface
+	db              store.EtcdInterface
 }
 
 type Executor interface {
 	Run(stopCh <-chan struct{})
 	SetOnePod(args *types.SetOnePodArgs) (*types.SetPodResult, error)
 	SetBatchPod(args *types.SetBatchPodArgs) (*types.SetPodResult, error)
+	GetInstanceUtil(args *types.GetInstanceArgs) (*types.GetInstanceResult, error)
 }
 
-func NewExecutor(kubeCli kubernetes.Interface, informerFactory informers.SharedInformerFactory) Executor {
+func NewExecutor(kubeCli kubernetes.Interface, informerFactory informers.SharedInformerFactory, db store.EtcdInterface) Executor {
 	podInformer := informerFactory.Core().V1().Pods()
 	control := controller.NewRealPodControl(kubeCli, podInformer.Lister())
 	return &executor{
@@ -31,6 +36,7 @@ func NewExecutor(kubeCli kubernetes.Interface, informerFactory informers.SharedI
 		podLister:       podInformer.Lister(),
 		podListerSynced: podInformer.Informer().HasSynced,
 		podControl:      control,
+		db:              db,
 	}
 }
 
@@ -68,6 +74,26 @@ func (e *executor) SetOnePod(args *types.SetOnePodArgs) (*types.SetPodResult, er
 		resp.Message = "update pod annotation error"
 		return resp, nil
 	}
+	resp.Code = 0
+	resp.Message = "success"
+	return resp, nil
+}
+
+func (e *executor) GetInstanceUtil(args *types.GetInstanceArgs) (*types.GetInstanceResult, error) {
+	resp := &types.GetInstanceResult{}
+	info, err := e.db.GetAlivePodInfo(context.Background(), "check")
+	if err != nil {
+		glog.Errorf("get instance error,err=%+v", err)
+		resp.Code = 1
+		resp.Message = "get instance util error"
+		return resp, nil
+	}
+	instances := make([]types.Instance, 0)
+	for name, val := range info {
+		util := strings.Split(val, "-")
+		instances = append(instances, types.Instance{Name: name, Read: util[0], Write: util[1]})
+	}
+	resp.Instances = instances
 	resp.Code = 0
 	resp.Message = "success"
 	return resp, nil

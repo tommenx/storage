@@ -163,3 +163,37 @@ func GetVolume(ctx context.Context, ns, pvc string) (*cdpb.Volume, error) {
 	}
 	return rsp.Volume, nil
 }
+
+func GetAlivePod(ctx context.Context, kind string) (map[string]string, error) {
+	req := &cdpb.GetAlivePodRequest{
+		Base: &base.Base{},
+		Kind: kind,
+	}
+	resp, err := cli.GetAlivePod(ctx, req)
+	if err != nil {
+		glog.Errorf("call get alive pod error, err=%+v", err)
+		return nil, err
+	}
+	if resp.BaseResp.Code != 0 {
+		glog.Errorf("remote server error, code=%d, msg=%v", resp.BaseResp.Code, resp.BaseResp.Message)
+		return nil, errors.New("remote server get volume error")
+	}
+	return resp.Info, nil
+}
+
+func PutStorageUtil(ctx context.Context, info map[string]string) error {
+	req := &cdpb.PutStorageUtilRequest{
+		Base: &base.Base{},
+		Info: info,
+	}
+	resp, err := cli.PutStorageUtil(ctx, req)
+	if err != nil {
+		glog.Errorf("call PutStorageUtil error, err=%+v", err)
+		return err
+	}
+	if resp.BaseResp.Code != 0 {
+		glog.Errorf("remote server error, code=%d, msg=%v", resp.BaseResp.Code, resp.BaseResp.Message)
+		return err
+	}
+	return nil
+}

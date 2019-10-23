@@ -80,3 +80,19 @@ func TestDirectPutPodResource(t *testing.T) {
 		t.Errorf("put pod resource error, %v", err)
 	}
 }
+func TestGetAlivePod(t *testing.T) {
+	Init(":50051")
+	data, err := GetAlivePod(context.Background(), "bounded")
+	if err != nil {
+		t.Errorf("%+v", err)
+	}
+	t.Logf("%+v", data)
+}
+
+func TestPutStorageUtil(t *testing.T) {
+	Init(":50051")
+	err := PutStorageUtil(context.Background(), "podb", "456")
+	if err != nil {
+		t.Errorf("%+v", err)
+	}
+}

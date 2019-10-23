@@ -29,7 +29,8 @@ func (w *watcher) Run(stopCh <-chan struct{}) {
 	for {
 		select {
 		case <-ticker.C:
-			_ = ReportRemainingResource()
+			go CheckPodStorageUtil()
+			//_ = ReportRemainingResource()
 		case <-stopCh:
 			glog.Info("stop report node storage info")
 			return

@@ -2,7 +2,6 @@ package watcher
 
 import (
 	"context"
-	"fmt"
 	"github.com/golang/glog"
 	"github.com/tommenx/cdproto/cdpb"
 	"github.com/tommenx/storage/pkg/config"
@@ -35,12 +34,54 @@ func GetRemainingResource(device string) (map[string]int64, error) {
 			break
 		}
 	}
-	fmt.Printf("used %+v \n", used)
 	remaining := config.GetCapability()
 	for k, v := range remaining {
 		remaining[k] = v - used[k]
 	}
 	return remaining, nil
+}
+
+func CheckPodStorageUtil() {
+	ctx := context.Background()
+	instance, err := rpc.GetAlivePod(ctx, "bounded")
+	if err != nil {
+		glog.Errorf("get alive pod error=%+v", err)
+		return
+	}
+	cmd := "iostat"
+	args := []string{"-x", "-m", "-N", "2", "2"}
+	out, err := exec.Command(cmd, args...).CombinedOutput()
+	if err != nil {
+		glog.Errorf("get device status error, err=%+v", err)
+		return
+	}
+	lines := strings.Split(string(out), "\n")
+	lines = lines[len(lines)/2+1:]
+	utilInfo := formatIostatResult(lines)
+	report := make(map[string]string)
+	for pod, volume := range instance {
+		target := "vgdata-" + strings.ReplaceAll(volume, "-", "--")
+		if util, ok := utilInfo[target]; ok {
+			report[pod] = util[0] + "-" + util[1]
+		}
+	}
+	if err := rpc.PutStorageUtil(ctx, report); err != nil {
+		glog.Errorf("PutStorageUtil error, err=%+v", err)
+		return
+	}
+}
+
+//读-写用 - 分割
+func formatIostatResult(strs []string) map[string][]string {
+	data := make(map[string][]string)
+	for _, line := range strs {
+		fields := strings.Fields(line)
+		if len(fields) > 7 {
+			data[fields[0]] = append(data[fields[0]], fields[5])
+			data[fields[0]] = append(data[fields[0]], fields[6])
+		}
+	}
+	return data
 }
 
 func ReportRemainingResource() error {

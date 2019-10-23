@@ -5,6 +5,7 @@ import (
 	"github.com/golang/glog"
 	"github.com/tommenx/storage/pkg/driver"
 	"github.com/tommenx/storage/pkg/rpc"
+	"net/http"
 	"os"
 )
 
@@ -30,5 +31,6 @@ func main() {
 	path := "/root/.kube/config"
 	driver := driver.NewLvmDriver(nodeId, endpoint, path)
 	driver.Run()
+	glog.Fatal(http.ListenAndServe(":50052", nil))
 	os.Exit(0)
 }

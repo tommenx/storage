@@ -186,14 +186,6 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:582b704bebaa06b48c29b0cec224a6058a09c86883aaddabde889cd1a5f73e1b"
-  name = "github.com/google/uuid"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "0cd6bf5da1e1c83f8b45653022c74f71af0538a4"
-  version = "v1.1.1"
-
-[[projects]]
   digest = "1:75eb87381d25cc75212f52358df9c3a2719584eaa9685cd510ce28699122f39d"
   name = "github.com/googleapis/gnostic"
   packages = [
@@ -291,14 +283,6 @@
   version = "v1.0.1"
 
 [[projects]]
-  digest = "1:e5d0bd87abc2781d14e274807a470acd180f0499f8bf5bb18606e9ec22ad9de9"
-  name = "github.com/pborman/uuid"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "adf5a7427709b9deb95d29d3fa8a2bf9cfd388f1"
-  version = "v1.2"
-
-[[projects]]
   digest = "1:cf31692c14422fa27c83a05292eb5cbe0fb2775972e8f1f8446a71549bd8980b"
   name = "github.com/pkg/errors"
   packages = ["."]
@@ -324,14 +308,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:cf058a54c3083142ad1d22469407df8ee6151b1333a16040cb6facf6f9d02fc4"
+  digest = "1:bcefe266389551fe643ace0fc8a450947ea74c6dec4bce1c80696fab6e6d2dec"
   name = "github.com/tommenx/cdproto"
   packages = [
     "base",
     "cdpb",
   ]
   pruneopts = "UT"
-  revision = "c9b02a64aa813360539d22053a52a8ccffd4302f"
+  revision = "da0cdbf84e49b6440699862079fe3769aef03065"
 
 [[projects]]
   digest = "1:762df97c14bc6eaa5a01a4dcf50820428ae495e020f3ba80762f217889de302c"
@@ -814,7 +798,6 @@
     "github.com/gogo/protobuf/proto",
     "github.com/golang/glog",
     "github.com/kubernetes-csi/drivers/pkg/csi-common",
-    "github.com/pborman/uuid",
     "github.com/tommenx/cdproto/base",
     "github.com/tommenx/cdproto/cdpb",
     "go.etcd.io/etcd/clientv3",

@@ -57,5 +57,4 @@ func (d *lvmDriver) Run() {
 	glog.Infof("start to run csi-plugin, name:%s, version:%s", DriverName, CSIVersion)
 	server := csicommon.NewNonBlockingGRPCServer()
 	server.Start(d.endpoint, d.idServer, d.controllerServer, d.nodeServer)
-	server.Wait()
 }

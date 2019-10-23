@@ -7,6 +7,7 @@ import (
 
 type PVCControlInterface interface {
 	GetPVC(namespace, name string) (*corev1.PersistentVolumeClaim, error)
+	GetVolumeName(namespace, name string) (string, error)
 }
 
 type realPVCControl struct {
@@ -22,4 +23,11 @@ func NewRealPVCControl(pvcLister corelisters.PersistentVolumeClaimLister) PVCCon
 func (c *realPVCControl) GetPVC(namespace, name string) (*corev1.PersistentVolumeClaim, error) {
 	pvc, err := c.pvcLister.PersistentVolumeClaims(namespace).Get(name)
 	return pvc, err
+}
+func (c *realPVCControl) GetVolumeName(namespace, name string) (string, error) {
+	pvc, err := c.pvcLister.PersistentVolumeClaims(namespace).Get(name)
+	if err != nil {
+		return "", err
+	}
+	return pvc.Spec.VolumeName, nil
 }

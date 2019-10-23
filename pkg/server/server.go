@@ -10,18 +10,20 @@ import (
 )
 
 type server struct {
-	db store.EtcdInterface
-	pv controller.PVController
+	db  store.EtcdInterface
+	pv  controller.PVController
+	pvc controller.PVCControlInterface
 }
 
 type Server interface {
 	Run()
 }
 
-func NewServer(db store.EtcdInterface, pv controller.PVController) Server {
+func NewServer(db store.EtcdInterface, pv controller.PVController, pvc controller.PVCControlInterface) Server {
 	return &server{
-		db: db,
-		pv: pv,
+		db:  db,
+		pv:  pv,
+		pvc: pvc,
 	}
 }
 

@@ -13,6 +13,7 @@ import (
 // /storage/nodes/node-name
 // /storage/pods/ns/pod-name
 // /storage/pvcs/ns/pvc-name
+
 var (
 	DefaultTimeout = 5 * time.Second
 	prefix         = "/storage/"
@@ -26,6 +27,9 @@ type EtcdHandler struct {
 }
 
 type EtcdInterface interface {
+	Put(ctx context.Context, key string, val []byte) error
+	Get(ctx context.Context, key string, prefix bool) (map[string][]byte, error)
+	Del(ctx context.Context, key string) error
 	PutNodeResource(ctx context.Context, node, kind, level, device string, val []byte) error
 	GetNodeResource(ctx context.Context, node, kind string) (map[string][]byte, error)
 	PutPVC(ctx context.Context, ns, pvc string, val []byte) error
@@ -33,6 +37,7 @@ type EtcdInterface interface {
 	PutPod(ctx context.Context, ns, name string, val []byte) error
 	GetPod(ctx context.Context, ns, name string) ([]byte, error)
 	DelPod(ctx context.Context, ns, name string) error
+	GetAlivePodInfo(ctx context.Context, kind string) (map[string]string, error)
 }
 
 func NewEtcd(endpoints []string) EtcdInterface {
@@ -82,7 +87,7 @@ func (h *EtcdHandler) Get(ctx context.Context, key string, prefix bool) (map[str
 func (h *EtcdHandler) Del(ctx context.Context, key string) error {
 	_, err := h.client.Delete(ctx, key)
 	if err != nil {
-		glog.Errorf("delete key %s error,err=%+v")
+		glog.Errorf("delete key %s error,err=%+v", key, err)
 		return err
 	}
 	return nil
@@ -158,10 +163,34 @@ func (h *EtcdHandler) DelPod(ctx context.Context, ns, name string) error {
 	key := getKey(prefixPod, ns, name)
 	err := h.Del(ctx, key)
 	if err != nil {
-		glog.Errorf("etcd del %s error, err=%+v", err)
+		glog.Errorf("etcd del %s error, err=%+v", key, err)
 		return err
 	}
 	return nil
+}
+
+func (h *EtcdHandler) GetAlivePodInfo(ctx context.Context, kind string) (map[string]string, error) {
+	var prefix string
+	if kind == "bounded" {
+		prefix = consts.KeyBounded
+	} else {
+		prefix = consts.KeyCheck
+	}
+	data, err := h.Get(ctx, prefix, true)
+	if err != nil {
+		glog.Errorf("get prefix %s error,err=%v", err)
+		return nil, err
+	}
+	info := make(map[string]string)
+	for str, val := range data {
+		key := extractKey(str)
+		info[key] = string(val)
+	}
+	return info, nil
+}
+
+func extractKey(key string) string {
+	return key[strings.LastIndex(key, "/")+1:]
 }
 
 func getKey(prefix string, args ...string) string {

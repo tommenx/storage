@@ -2,11 +2,13 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"github.com/gogo/protobuf/proto"
 	"github.com/golang/glog"
 	"github.com/tommenx/cdproto/base"
 	"github.com/tommenx/cdproto/cdpb"
 	"github.com/tommenx/storage/pkg/consts"
+	"strings"
 	"time"
 )
 
@@ -179,12 +181,22 @@ func (s *server) PutPodResource(ctx context.Context, req *cdpb.PutPodResourceReq
 		rsp.BaseResp.Message = "put node storage error"
 		return rsp, nil
 	}
+	var errCheck error
+	var errBound error
 	if op == consts.OpAdd {
 		err = s.putPodResource(ctx, namespace, pod, req.Pod)
+		//	TODO 这里做简单处理，将pvc和pod的名字强绑定
+		//	TODO pod的名字:tidb-cluster-tikv-0，pvc则为: tikv-tidb-cluster-tikv-0
+		//	TODO 以后再慢慢改吧
+		volumeName, _ := s.pvc.GetVolumeName(namespace, fmt.Sprintf("tikv-%s", pod))
+		err = s.db.Put(ctx, fmt.Sprintf("%s%s", consts.KeyBounded, pod), []byte(volumeName))
+
 	} else {
 		err = s.db.DelPod(ctx, namespace, pod)
+		errCheck = s.db.Del(ctx, fmt.Sprintf("%s%s", consts.KeyCheck, pod))
+		errBound = s.db.Del(ctx, fmt.Sprintf("%s%s", consts.KeyBounded, pod))
 	}
-	if err != nil {
+	if err != nil || errBound != nil || errCheck != nil {
 		rsp.BaseResp.Code = consts.CodeInternalErr
 		rsp.BaseResp.Message = "internal error"
 		return rsp, nil
@@ -246,12 +258,6 @@ func (s *server) PutVolume(ctx context.Context, req *cdpb.PutVolumeRequest) (*cd
 		time.Sleep(1 * time.Second)
 		retry--
 	}
-	if err != nil {
-		glog.Errorf("get bounded pvc error,pv name=%s, err=%+v", pvName, err)
-		rsp.BaseResp.Code = consts.CodeNotFound
-		rsp.BaseResp.Message = "get pvc by pv error"
-		return rsp, nil
-	}
 	val, err := proto.Marshal(req.Volume)
 	if err != nil {
 		glog.Errorf("marshal volume error, pvc=%v, err=%+v", pvc, err)
@@ -296,4 +302,54 @@ func (s *server) GetVolume(ctx context.Context, req *cdpb.GetVolumeRequest) (*cd
 	rsp.BaseResp.Code = consts.CodeOK
 	rsp.BaseResp.Message = "success"
 	return rsp, nil
+}
+
+func (s *server) GetAlivePod(ctx context.Context, req *cdpb.GetAlivePodRequest) (*cdpb.GetAlivePodResponse, error) {
+	resp := &cdpb.GetAlivePodResponse{
+		BaseResp: &base.BaseResp{},
+	}
+	var prefix string
+	if req.Kind == "bounded" {
+		prefix = consts.KeyBounded
+	} else {
+		prefix = consts.KeyCheck
+	}
+	data, err := s.db.Get(ctx, prefix, true)
+	if err != nil {
+		glog.Errorf("get prefix %s error,err=%v", err)
+		resp.BaseResp.Code = 1
+		resp.BaseResp.Message = "etcd get data error"
+		return resp, nil
+	}
+	info := make(map[string]string)
+	for str, val := range data {
+		key := extractKey(str)
+		info[key] = string(val)
+	}
+	resp.Info = info
+	resp.BaseResp.Code = 0
+	resp.BaseResp.Message = "success"
+	return resp, nil
+}
+
+func extractKey(key string) string {
+	return key[strings.LastIndex(key, "/")+1:]
+}
+
+func (s *server) PutStorageUtil(ctx context.Context, req *cdpb.PutStorageUtilRequest) (*cdpb.PutStorageUtilResponse, error) {
+	resp := &cdpb.PutStorageUtilResponse{
+		BaseResp: &base.BaseResp{},
+	}
+	for podName, storageUtil := range req.Info {
+		err := s.db.Put(ctx, fmt.Sprintf("%s%s", consts.KeyCheck, podName), []byte(storageUtil))
+		if err != nil {
+			glog.Errorf("put pod %s check error, err=%v", podName, err)
+			resp.BaseResp.Code = 1
+			resp.BaseResp.Message = "put pod check error"
+			return resp, nil
+		}
+	}
+	resp.BaseResp.Code = 0
+	resp.BaseResp.Message = "success"
+	return resp, nil
 }

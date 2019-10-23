@@ -9,6 +9,7 @@ import (
 	"github.com/tommenx/storage/pkg/watcher"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
+	"net/http"
 	"time"
 )
 
@@ -43,7 +44,7 @@ func main() {
 	kubeInformerFactory := controller.NewSharedInformerFactory(path)
 	informerFactory := controller.NewSLInformerFactory(path)
 	controller := controller.NewController(clienset, kubeInformerFactory, informerFactory, nodeName)
-	watch := watcher.NewWatcher(time.Second * 60)
+	watch := watcher.NewWatcher(time.Second * 5)
 	if err := watch.InitResource(); err != nil {
 		glog.Errorf("init node resource error, err=%+v", err)
 		panic(err)
@@ -51,7 +52,8 @@ func main() {
 	stopCh := make(chan struct{})
 	go kubeInformerFactory.Start(stopCh)
 	go informerFactory.Start(stopCh)
-	//go watch.Run(stopCh)
+	go watch.Run(stopCh)
 	// 添加监控接口
-	controller.Run(1, stopCh)
+	go controller.Run(1, stopCh)
+	glog.Fatal(http.ListenAndServe(":50053", nil))
 }

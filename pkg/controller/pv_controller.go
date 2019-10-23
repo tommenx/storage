@@ -18,6 +18,7 @@ type PVController interface {
 	Run(stop <-chan struct{})
 	GetPVCByPV(pvName string) (string, string, error)
 	GetPV(volumeId string) (*corev1.PersistentVolume, error)
+	GetPodByPV(pvName string) (string, string, error)
 }
 
 func NewPVController(informerFactory informers.SharedInformerFactory) PVController {
@@ -54,4 +55,19 @@ func (c *pvController) GetPVCByPV(pvName string) (string, string, error) {
 
 func (c *pvController) GetPV(volumeId string) (*corev1.PersistentVolume, error) {
 	return c.pvLister.Get(volumeId)
+}
+
+// namespace,name,error
+func (c *pvController) GetPodByPV(pvName string) (string, string, error) {
+	pvInfo, err := c.pvLister.Get(pvName)
+	if err != nil {
+		glog.Errorf("get pv info error, err=%+v", err)
+		return "", "", err
+	}
+	glog.Infof("annotation: %+v", pvInfo.Annotations)
+	podName, ok := pvInfo.Annotations["tidb.pingcap.com/pod-name"]
+	if !ok {
+		return "", "", consts.ErrNotBound
+	}
+	return "default", podName, nil
 }

@@ -26,3 +26,18 @@ type SetPodResult struct {
 type HelloResult struct {
 	Hello string `json:"hello"`
 }
+
+type GetInstanceArgs struct {
+}
+
+type Instance struct {
+	Name  string `json:"name"`
+	Read  string `json:"read"`
+	Write string `json:"write"`
+}
+
+type GetInstanceResult struct {
+	Instances []Instance `json:"instances"`
+	Code      int32      `json:"code"`
+	Message   string     `json:"message"`
+}

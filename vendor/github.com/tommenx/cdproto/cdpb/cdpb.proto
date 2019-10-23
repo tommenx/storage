@@ -118,11 +118,33 @@ message GetPodResourceRequest {
     string pod = 2;
     base.Base base = 255;
 }
-
 message GetPodResourceResponse {
     PodResource pod = 1;
     base.BaseResp base_resp = 255;
 }
+
+message GetAlivePodRequest {
+    string kind = 1; // volume or status
+    base.Base base = 255;
+}
+
+message GetAlivePodResponse{
+    map<string,string> info = 1; // pod-name: volume-name/storage-util
+    base.BaseResp base_resp = 255;
+
+}
+
+message PutStorageUtilRequest {
+    map<string,string> info = 1;
+    base.Base base = 255;
+}
+
+message PutStorageUtilResponse {
+    base.BaseResp base_resp = 255;
+}
+
+
+
 
 service Coordinator {
     rpc PutNodeStorage (PutNodeStorageRequest) returns (PutNodeStorageResponse);
@@ -131,6 +153,8 @@ service Coordinator {
     rpc GetPodResource (GetPodResourceRequest) returns (GetPodResourceResponse);
     rpc PutVolume (PutVolumeRequest) returns (PutVolumeResponse);
     rpc GetVolume (GetVolumeRequest) returns (GetVolumeResponse);
+    rpc GetAlivePod (GetAlivePodRequest) returns (GetAlivePodResponse);
+    rpc PutStorageUtil(PutStorageUtilRequest) returns(PutStorageUtilResponse);
 }
 
 

@@ -7,40 +7,6 @@ import (
 	"testing"
 )
 
-func TestPutAndGet(t *testing.T) {
-	endpoints := []string{
-		"127.0.0.1:2379",
-	}
-	h := NewEtcd(endpoints)
-	ctx := context.TODO()
-	infos := map[string]string{
-		"a": "aaaa",
-		"b": "bbbb",
-		"c": "cccc",
-	}
-	for k, v := range infos {
-		err := h.PutPod(ctx, k, k, []byte(v))
-		err = h.PutNode(ctx, k, []byte(v))
-		if err != nil {
-			t.Error(err)
-		}
-	}
-	//get
-	for k, v := range infos {
-		val, _ := h.GetPod(ctx, k, k)
-		if v != string(val) {
-			t.Errorf("put %s, get %s", v, string(val))
-		}
-	}
-	kvs, _ := h.GetNodeList(ctx)
-	for k, v := range kvs {
-		if string(v) != infos[k] {
-			t.Errorf("put %s, get %s", infos[k], string(v))
-		}
-	}
-
-}
-
 func TestGet(t *testing.T) {
 	store := NewEtcd([]string{"127.0.0.1:2379"})
 	ctx := context.Background()
@@ -131,4 +97,17 @@ func TestGetVolume(t *testing.T) {
 		return
 	}
 	t.Logf("%+v", vol)
+}
+
+func TestGetAlivePod(t *testing.T) {
+	etcd := NewEtcd([]string{"127.0.0.1:2379"})
+	ctx := context.Background()
+	data, err := etcd.Get(ctx, "/storage/bounded/", true)
+	if err != nil {
+		t.Errorf("get storage data error, err=%+v", err)
+		return
+	}
+	for key, val := range data {
+		t.Logf("key:%s,val:%s", key, string(val))
+	}
 }

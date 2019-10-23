@@ -6,6 +6,7 @@ import (
 	"github.com/golang/glog"
 	"github.com/tommenx/storage/pkg/api"
 	"github.com/tommenx/storage/pkg/api/types"
+	"github.com/tommenx/storage/pkg/store"
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
 	"net/http"
@@ -23,8 +24,8 @@ type server struct {
 }
 
 // StartServer starts a kubernetes scheduler extender http apiserver
-func StartServer(kubeCli kubernetes.Interface, informerFactory informers.SharedInformerFactory, port int) {
-	e := api.NewExecutor(kubeCli, informerFactory)
+func StartServer(kubeCli kubernetes.Interface, informerFactory informers.SharedInformerFactory, port int, db store.EtcdInterface) {
+	e := api.NewExecutor(kubeCli, informerFactory, db)
 	svr := &server{exec: e}
 
 	stopCh := make(chan struct{})
@@ -50,6 +51,10 @@ func StartServer(kubeCli kubernetes.Interface, informerFactory informers.SharedI
 		Doc("hello").
 		Operation("Hello").
 		Writes(types.HelloResult{}))
+	ws.Route(ws.GET("/util").To(svr.getUtil).
+		Doc("util").
+		Operation("Util").
+		Writes(types.GetInstanceResult{}))
 
 	restful.Add(ws)
 	glog.Infof("start scheduler extender server, listening on 0.0.0.0:%d", port)
@@ -72,6 +77,19 @@ func (svr *server) setBatchPod(req *restful.Request, resp *restful.Response) {
 	}
 
 	if err := resp.WriteEntity(setPodResult); err != nil {
+		errorResponse(resp, errFailToWrite)
+	}
+}
+func (svr *server) getUtil(req *restful.Request, resp *restful.Response) {
+	svr.lock.Lock()
+	defer svr.lock.Unlock()
+	getInstanceResult, err := svr.exec.GetInstanceUtil(&types.GetInstanceArgs{})
+	if err != nil {
+		errorResponse(resp, restful.NewError(http.StatusInternalServerError,
+			fmt.Sprintf("unable to get instace storage util : %v", err)))
+		return
+	}
+	if err := resp.WriteEntity(getInstanceResult); err != nil {
 		errorResponse(resp, errFailToWrite)
 	}
 }

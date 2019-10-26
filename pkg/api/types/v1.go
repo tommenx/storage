@@ -1,14 +1,8 @@
 package types
 
-type Request struct {
-	Pod   string `json:"pod"`
-	Read  string `json:"read"`
-	Write string `json:"write"`
-}
-
 type SetOnePodArgs struct {
-	Namespace string    `json:"namespace"`
-	Requests  []Request `json:"requests"`
+	Namespace string     `json:"namespace"`
+	Requests  []Instance `json:"requests"`
 }
 
 type SetBatchPodArgs struct {

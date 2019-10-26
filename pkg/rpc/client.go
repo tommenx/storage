@@ -181,10 +181,11 @@ func GetAlivePod(ctx context.Context, kind string) (map[string]string, error) {
 	return resp.Info, nil
 }
 
-func PutStorageUtil(ctx context.Context, info map[string]string) error {
+func PutStorageUtil(ctx context.Context, info map[string]string, nodeId string) error {
 	req := &cdpb.PutStorageUtilRequest{
 		Base: &base.Base{},
 		Info: info,
+		Node: nodeId,
 	}
 	resp, err := cli.PutStorageUtil(ctx, req)
 	if err != nil {

@@ -22,6 +22,7 @@ const (
 	OpDel           = int32(0)
 	KeyBounded      = "/storage/bounded/"
 	KeyCheck        = "/storage/check/"
+	KeyLog          = "/storage/log/"
 )
 
 var (

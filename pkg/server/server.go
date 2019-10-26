@@ -10,9 +10,11 @@ import (
 )
 
 type server struct {
-	db  store.EtcdInterface
-	pv  controller.PVController
-	pvc controller.PVCControlInterface
+	db         store.EtcdInterface
+	pv         controller.PVController
+	pvc        controller.PVCControlInterface
+	data       map[string]string
+	lastServer string
 }
 
 type Server interface {
@@ -21,9 +23,11 @@ type Server interface {
 
 func NewServer(db store.EtcdInterface, pv controller.PVController, pvc controller.PVCControlInterface) Server {
 	return &server{
-		db:  db,
-		pv:  pv,
-		pvc: pvc,
+		db:         db,
+		pv:         pv,
+		pvc:        pvc,
+		data:       make(map[string]string),
+		lastServer: "",
 	}
 }
 

@@ -1,12 +1,17 @@
 package watcher
 
 import (
+	"context"
 	"github.com/golang/glog"
+	"github.com/tommenx/storage/pkg/rpc"
+	"strings"
 	"time"
 )
 
 type watcher struct {
 	period time.Duration
+	dataCh chan map[string][]string
+	nodeId string
 }
 
 type Watcher interface {
@@ -14,9 +19,11 @@ type Watcher interface {
 	Run(stopCh <-chan struct{})
 }
 
-func NewWatcher(period time.Duration) Watcher {
+func NewWatcher(period time.Duration, nodeId string) Watcher {
 	return &watcher{
 		period: period,
+		dataCh: make(chan map[string][]string),
+		nodeId: nodeId,
 	}
 }
 
@@ -25,16 +32,36 @@ func (w *watcher) InitResource() error {
 }
 
 func (w *watcher) Run(stopCh <-chan struct{}) {
-	ticker := time.NewTicker(w.period)
+	go GetIostatInfo(w.dataCh)
 	for {
 		select {
-		case <-ticker.C:
-			go CheckPodStorageUtil()
-			//_ = ReportRemainingResource()
+		case data := <-w.dataCh:
+			w.reportIOutil(data)
 		case <-stopCh:
 			glog.Info("stop report node storage info")
 			return
 		}
+	}
+}
+
+func (w *watcher) reportIOutil(data map[string][]string) {
+	ctx := context.Background()
+	instance, err := rpc.GetAlivePod(ctx, "bounded")
+	if err != nil {
+		glog.Errorf("get alive pod error=%+v", err)
+		return
+	}
+	report := make(map[string]string)
+	for pod, volume := range instance {
+		target := "vgdata-" + strings.ReplaceAll(volume, "-", "--")
+		if util, ok := data[target]; ok {
+			report[pod] = util[0] + "-" + util[1]
+		}
+	}
+	glog.Infof("get iostat log %+v", report)
+	if err := rpc.PutStorageUtil(ctx, report, w.nodeId); err != nil {
+		glog.Errorf("PutStorageUtil error, err=%+v", err)
+		return
 	}
 
 }

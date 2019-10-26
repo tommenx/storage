@@ -19,6 +19,10 @@ var (
 	coordinator string
 )
 
+var (
+	LOGFILE_PREFIX = "/var/log/alicloud/"
+)
+
 func init() {
 	flag.Set("logtostderr", "true")
 	flag.StringVar(&nodeName, "node", "localhost.localdomain", "use to identify node")
@@ -44,7 +48,7 @@ func main() {
 	kubeInformerFactory := controller.NewSharedInformerFactory(path)
 	informerFactory := controller.NewSLInformerFactory(path)
 	controller := controller.NewController(clienset, kubeInformerFactory, informerFactory, nodeName)
-	watch := watcher.NewWatcher(time.Second * 5)
+	watch := watcher.NewWatcher(time.Second*5, nodeName)
 	if err := watch.InitResource(); err != nil {
 		glog.Errorf("init node resource error, err=%+v", err)
 		panic(err)

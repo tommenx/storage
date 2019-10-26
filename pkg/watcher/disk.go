@@ -1,6 +1,7 @@
 package watcher
 
 import (
+	"bufio"
 	"context"
 	"github.com/golang/glog"
 	"github.com/tommenx/cdproto/cdpb"
@@ -8,6 +9,7 @@ import (
 	"github.com/tommenx/storage/pkg/consts"
 	"github.com/tommenx/storage/pkg/rpc"
 	"github.com/tommenx/storage/pkg/utils"
+	"io"
 	"os/exec"
 	"strings"
 )
@@ -65,7 +67,7 @@ func CheckPodStorageUtil() {
 			report[pod] = util[0] + "-" + util[1]
 		}
 	}
-	if err := rpc.PutStorageUtil(ctx, report); err != nil {
+	if err := rpc.PutStorageUtil(ctx, report, "aaa"); err != nil {
 		glog.Errorf("PutStorageUtil error, err=%+v", err)
 		return
 	}
@@ -82,6 +84,40 @@ func formatIostatResult(strs []string) map[string][]string {
 		}
 	}
 	return data
+}
+func GetIostatInfo(msgCh chan map[string][]string) error {
+	command := "iostat"
+	args := []string{"-x", "-m", "-N", "10"}
+	cmd := exec.Command(command, args...)
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		return err
+	}
+	cmd.Start()
+	reader := bufio.NewReader(stdout)
+	f1 := false
+	lines := make([]string, 0)
+	for {
+		line, err2 := reader.ReadString('\n')
+		if err2 != nil || io.EOF == err2 {
+			break
+		}
+
+		if strings.HasPrefix(line, "Device") {
+			f1 = true
+		}
+		if f1 {
+			lines = append(lines, line)
+		}
+		if f1 && line == "\n" {
+			f1 = false
+			lines = lines[:len(lines)-1]
+			data := formatIostatResult(lines)
+			msgCh <- data
+			lines = make([]string, 0)
+		}
+	}
+	return nil
 }
 
 func ReportRemainingResource() error {

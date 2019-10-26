@@ -11,7 +11,7 @@ import (
 func main() {
 	rpc.Init(":50051")
 	config.Init("../../config.toml")
-	watch := watcher.NewWatcher(time.Second * 5)
+	watch := watcher.NewWatcher(time.Second*5, "qqq")
 	stopCh := make(chan struct{})
 	go watch.Run(stopCh)
 	time.Sleep(100 * time.Second)

@@ -136,6 +136,7 @@ message GetAlivePodResponse{
 
 message PutStorageUtilRequest {
     map<string,string> info = 1;
+    string node = 2;
     base.Base base = 255;
 }
 

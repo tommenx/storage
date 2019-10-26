@@ -15,7 +15,7 @@ type realPodControl struct {
 }
 
 type PodControlInterface interface {
-	SetOnePod(ns string, requests []types.Request) error
+	SetOnePod(ns string, requests []types.Instance) error
 	SetBatchPod(args map[string]string, read, write string) error
 }
 
@@ -26,9 +26,9 @@ func NewRealPodControl(kubeCli kubernetes.Interface, podLister corelisters.PodLi
 	}
 }
 
-func (c *realPodControl) SetOnePod(ns string, requests []types.Request) error {
+func (c *realPodControl) SetOnePod(ns string, requests []types.Instance) error {
 	for _, request := range requests {
-		pod, err := c.podLister.Pods(ns).Get(request.Pod)
+		pod, err := c.podLister.Pods(ns).Get(request.Name)
 		if err != nil {
 			glog.Errorf("get pod %s/%s error, err=%+s", ns, pod, err)
 			return errors.New("get pod info error")
@@ -41,7 +41,7 @@ func (c *realPodControl) SetOnePod(ns string, requests []types.Request) error {
 		}
 		_, err = c.kubeCli.CoreV1().Pods(ns).Update(pod)
 		if err != nil {
-			glog.Errorf("update pod %s/%s annotation error, err=%+v", ns, request.Pod, err)
+			glog.Errorf("update pod %s/%s annotation error, err=%+v", ns, request.Name, err)
 			return errors.New("update pod info error")
 		}
 	}

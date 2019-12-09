@@ -23,6 +23,7 @@ const (
 	KeyBounded      = "/storage/bounded/"
 	KeyCheck        = "/storage/check/"
 	KeyLog          = "/storage/log/"
+	KeyLimit        = "/storage/limit/"
 )
 
 var (

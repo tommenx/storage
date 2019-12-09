@@ -198,3 +198,20 @@ func PutStorageUtil(ctx context.Context, info map[string]string, nodeId string) 
 	}
 	return nil
 }
+func PutInstanceLimit(ctx context.Context, name, val string) error {
+	req := &cdpb.PutInstanceLimitRequest{
+		Base: &base.Base{},
+		Name: name,
+		Val:  val,
+	}
+	resp, err := cli.PutInstanceLimit(ctx, req)
+	if err != nil {
+		glog.Errorf("call PutInstanceLimit error, err=%+v", err)
+		return err
+	}
+	if resp.BaseResp.Code != 0 {
+		glog.Errorf("remote server error, code=%d, msg=%v", resp.BaseResp.Code, resp.BaseResp.Message)
+		return err
+	}
+	return nil
+}

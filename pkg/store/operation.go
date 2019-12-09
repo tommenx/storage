@@ -173,12 +173,14 @@ func (h *EtcdHandler) GetAlivePodInfo(ctx context.Context, kind string) (map[str
 	var prefix string
 	if kind == "bounded" {
 		prefix = consts.KeyBounded
-	} else {
+	} else if kind == "check" {
 		prefix = consts.KeyCheck
+	} else if kind == "limit" {
+		prefix = consts.KeyLimit
 	}
 	data, err := h.Get(ctx, prefix, true)
 	if err != nil {
-		glog.Errorf("get prefix %s error,err=%v", err)
+		glog.Errorf("get prefix %s error,err=%v", prefix, err)
 		return nil, err
 	}
 	info := make(map[string]string)

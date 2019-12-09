@@ -16,6 +16,7 @@ import (
 	"github.com/tommenx/storage/pkg/rpc"
 	"github.com/tommenx/storage/pkg/utils"
 	corev1 "k8s.io/api/core/v1"
+	"strconv"
 )
 
 type volumeControl struct {
@@ -63,12 +64,6 @@ func (c *volumeControl) Sync(pod *corev1.Pod) error {
 		glog.Errorf("get volume error, pvc=%s, err=%+v", pvc, err)
 		return err
 	}
-	//label, ok := pod.Annotations["storage.io/label"]
-	//if !ok {
-	//	glog.Errorf("pod %s/%s do not identify storage label", ns, name)
-	//	return errors.New("do not identify storage label")
-	//}
-	//requestResource, err := c.slController.GetStorageLabel(label)
 	requestResource := getRequestResource(pod)
 	requestResource["space"] = int64(volume.Size)
 	podResource, err := rpc.GetPodResource(ctx, ns, name)
@@ -110,7 +105,12 @@ func (c *volumeControl) Sync(pod *corev1.Pod) error {
 			return err
 		}
 	}
-
+	limit := strconv.FormatInt(requestResource["write_bps_device"], 10)
+	err = rpc.PutInstanceLimit(ctx, name, limit)
+	if err != nil {
+		glog.Errorf("report instance error, err=%+v", err)
+		return err
+	}
 	err = isolate.SetBlkio(cgroupParentPath, dockerId, requestResource, volume.Maj, volume.Min)
 	if err != nil {
 		glog.Errorf("set volume isolate error, err=%+v", err)
@@ -118,5 +118,4 @@ func (c *volumeControl) Sync(pod *corev1.Pod) error {
 	}
 	glog.Infof("set isolate success, pod=%s", name)
 	return nil
-
 }

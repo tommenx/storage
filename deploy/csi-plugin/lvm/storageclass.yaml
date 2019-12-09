@@ -4,5 +4,7 @@ metadata:
    name: csi-lvm
 provisioner: lvmplugin.csi.alibabacloud.com
 parameters:
-    vgName: volumegroup1
+    kind: vgdata
+    fsType: ext4
 reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer

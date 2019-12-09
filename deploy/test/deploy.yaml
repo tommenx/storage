@@ -16,7 +16,9 @@ items:
             app: ubuntu
           annotations:
             storage.io/storage: enable
-            storage.io/label: fast
+#            storage.io/label: fast
+            storage.io/read: 10
+            storage.io/write: 20
             storage.io/docker: ubuntu
             storage.io/size : 10
         spec:

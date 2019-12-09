@@ -55,6 +55,18 @@ func StartServer(kubeCli kubernetes.Interface, informerFactory informers.SharedI
 		Doc("util").
 		Operation("Util").
 		Writes(types.GetInstanceResult{}))
+	ws.Route(ws.GET("/allocation/{which}").To(svr.getReourceAllocation).
+		Doc("get resource allocation").
+		Param(ws.PathParameter("which", "identify which").DataType("string")).
+		Writes(types.QueryResult{}))
+	ws.Route(ws.GET("/time/{which}").To(svr.getResourceTime).
+		Doc("get resource time").
+		Param(ws.PathParameter("which", "identify which").DataType("string")).
+		Writes(types.QueryResult{}))
+	ws.Route(ws.GET("/qps/{which}").To(svr.getQPS).
+		Doc("get qps").
+		Param(ws.PathParameter("which", "identify which").DataType("string")).
+		Writes(types.QueryResult{}))
 
 	restful.Add(ws)
 	glog.Infof("start scheduler extender server, listening on 0.0.0.0:%d", port)
@@ -83,7 +95,7 @@ func (svr *server) setBatchPod(req *restful.Request, resp *restful.Response) {
 func (svr *server) getUtil(req *restful.Request, resp *restful.Response) {
 	svr.lock.Lock()
 	defer svr.lock.Unlock()
-	getInstanceResult, err := svr.exec.GetInstanceUtil(&types.GetInstanceArgs{})
+	getInstanceResult, err := svr.exec.GetInstanceUtil()
 	if err != nil {
 		errorResponse(resp, restful.NewError(http.StatusInternalServerError,
 			fmt.Sprintf("unable to get instace storage util : %v", err)))
@@ -121,6 +133,38 @@ func (svr *server) hello(req *restful.Request, resp *restful.Response) {
 		Hello: "hello",
 	}
 	if err := resp.WriteEntity(helloResult); err != nil {
+		errorResponse(resp, errFailToWrite)
+	}
+}
+func (svr *server) getResourceTime(req *restful.Request, resp *restful.Response) {
+	svr.lock.Lock()
+	defer svr.lock.Unlock()
+	resp.AddHeader("Access-Control-Allow-Origin", "*")
+	which := req.PathParameter("which")
+	res, _ := svr.exec.Query("resource_time", which)
+	if err := resp.WriteEntity(res); err != nil {
+		errorResponse(resp, errFailToWrite)
+	}
+}
+
+func (svr *server) getReourceAllocation(req *restful.Request, resp *restful.Response) {
+	svr.lock.Lock()
+	defer svr.lock.Unlock()
+	resp.AddHeader("Access-Control-Allow-Origin", "*")
+	which := req.PathParameter("which")
+	res, _ := svr.exec.Query("resource_allocation", which)
+	if err := resp.WriteEntity(res); err != nil {
+		errorResponse(resp, errFailToWrite)
+	}
+}
+
+func (svr *server) getQPS(req *restful.Request, resp *restful.Response) {
+	svr.lock.Lock()
+	defer svr.lock.Unlock()
+	resp.AddHeader("Access-Control-Allow-Origin", "*")
+	which := req.PathParameter("which")
+	res, _ := svr.exec.Query("qps", which)
+	if err := resp.WriteEntity(res); err != nil {
 		errorResponse(resp, errFailToWrite)
 	}
 }

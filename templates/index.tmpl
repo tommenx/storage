@@ -1,0 +1,492 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Pym Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.bootcss.com/echarts/4.3.0/echarts-en.common.min.js"></script>
+</head>
+<body>
+<div class="jumbotron">
+    <div class="container">
+        <center>
+            <h1>Pym: Elastic scaling system for cloud database QoS guarantee</h1>
+        </center>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <form class="form-inline">
+            <div class="form-group">
+                <label>Request QPS</label>
+                <input type="text" class="form-control" id="request-qps" placeholder="Request QPS">
+            </div>
+            <button type="button" class="btn btn-primary" id="request-qps-btn">Submit</button>
+            <div class="form-group">
+                <label>Request Instance count</label>
+                <input type="text" class="form-control" id="request-replica" placeholder="Request Replica">
+            </div>
+            <button type="button" class="btn btn-primary" id="request-replica-btn">Submit</button>
+        </form>
+        <script type="text/javascript">
+            function reportSetting(which, kind, val) {
+                url = '/setting/' + which;
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    dataType: 'json',
+                    data: {
+                        key: kind,
+                        val: val
+                    },
+                    success: function (res) {
+                        console.log(res)
+                    }
+                });
+            }
+
+            $("#request-qps-btn").click(function () {
+                var data = $("#request-qps").val()
+                reportSetting("fancy", "qps", data)
+                reportSetting("old", "qps", data)
+            });
+            $("#request-replica-btn").click(function () {
+                var data2 = $("#request-replica").val()
+                reportSetting("fancy", "replica", data2)
+                reportSetting("old", "replica", data2)
+            })
+        </script>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h5> Adaptive-Bandwidth: <span id="pym-qps" style="font-size:20px">50</span>%</h5>
+                    <h5> Fixed-Bandwidth: <span id="fixed-qps" style="font-size:20px">30</span>%</h5>
+                    <div id="qps" style="width: 100%;height:300px;"></div>
+                    <script type="text/javascript">
+                        // 基于准备好的dom，初始化echarts实例
+                        var qpsChart = echarts.init(document.getElementById('qps'));
+                        var lastQPSTime = 1;
+                        var dateQPS = [];
+                        var requestQPSData = [];
+                        var testQPSData = [];
+                        var compareQPSData = [];
+                        var maxQPSLen = 300;
+                        var lastTestData;
+                        var lastCompareData;
+                        var lastReuqestData;
+
+                        var pymQPS = 0;
+                        var fixedQPS = 0;
+                        var pymCount = 0;
+                        var fixedCount = 0;
+                        var totalCount = 1;
+                        // 指定图表的配置项和数据
+                        var optionQPS = {
+                            title: {
+                                text: 'System QPS'
+                            },
+                            legend: {
+                                data: ['Adaptive-Bandwidth', 'Fixed-Bandwidth', 'Request']
+                            },
+                            xAxis: {
+                                type: 'category',
+                                name:'time',
+                                data: dateQPS
+                            },
+                            yAxis: {
+                                type: 'value',
+                                name: 'QPS'
+                            },
+                            series: [
+                                {
+                                    id: 'test',
+                                    name: 'Adaptive-Bandwidth',
+                                    type: 'line',
+                                    smooth: true,
+                                    connectNulls: true,
+                                    data: testQPSData,
+                                },
+                                {
+                                    id: 'compare',
+                                    name: 'Fixed-Bandwidth',
+                                    type: 'line',
+                                    smooth: true,
+                                    connectNulls: true,
+                                    data: compareQPSData,
+                                },
+                                {
+                                    id: 'request',
+                                    name: 'Request',
+                                    type: 'line',
+                                    smooth: true,
+                                    connectNulls: true,
+                                    data: requestQPSData,
+                                    lineStyle: {
+                                        type: 'dashed'
+                                    }
+                                }
+                            ]
+                        };
+                        qpsChart.setOption(optionQPS);
+
+                        function updateData() {
+                            $.ajax({
+                                type: 'GET',
+                                url: '/qps/old',
+                                dataType: 'json',
+                                success: function (res) {
+                                    if (res.val < 5) {
+                                        res.val = lastCompareData
+                                    } else {
+                                        lastCompareData = res.val
+                                    }
+                                    compareQPSData.push(res.val)
+                                }
+                            });
+                            $.ajax({
+                                type: 'GET',
+                                url: '/qps/fancy',
+                                dataType: 'json',
+                                success: function (res) {
+                                    if (res.val < 5) {
+                                        res.val = lastTestData
+                                    } else {
+                                        lastTestData = res.val
+                                    }
+                                    testQPSData.push(res.val)
+                                }
+                            });
+                            $.ajax({
+                                type: 'GET',
+                                url: '/requestqps/fancy',
+                                dataType: 'json',
+                                success: function (res) {
+                                    lastReuqestData = res.val * 0.45;
+                                    requestQPSData.push(lastReuqestData)
+                                }
+                            });
+                            dateQPS.push(lastQPSTime);
+                            lastQPSTime++;
+                            totalCount++;
+                            if (lastTestData > lastReuqestData) {
+                                pymCount++;
+                            }
+                            if(lastCompareData > lastReuqestData) {
+                                fixedCount++;
+                            }
+                            pymQPS = ((pymCount/totalCount) * 100).toFixed(2);
+                            fixedQPS = ((fixedCount/totalCount) * 100).toFixed(2);
+                            $('#pym-qps').text(pymQPS);
+                            $('#fixed-qps').text(fixedQPS);
+                            if (dateQPS.length > maxQPSLen) {
+                                dateQPS.shift();
+                                testQPSData.shift();
+                                compareQPSData.shift();
+                                requestQPSData.shift();
+                            }
+                        }
+
+                        setInterval(function () {
+                            updateData();
+                            qpsChart.setOption(optionQPS)
+                        }, 5000)
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div id="resource-allocation" style="width: 100%;height:300px;"></div>
+                    <script type="text/javascript">
+                        // 基于准备好的dom，初始化echarts实例
+                        var allocationChart = echarts.init(document.getElementById('resource-allocation'));
+                        var lastAllocationTime = 1;
+                        var dateAllocation = [];
+                        var testAllocationData = [];
+                        var compareAllocationData = [];
+                        var maxAllocationLen = 300;
+                        // 指定图表的配置项和数据
+                        var optionAllocation = {
+                            title: {
+                                text: 'Storage Bandwidth Resource Allocation'
+                            },
+                            legend: {
+                                data: ['Adaptive-Bandwidth', 'Fixed-Bandwidth']
+                            },
+                            xAxis: {
+                                type: 'category',
+                                name: 'time',
+                                data: dateAllocation
+                            },
+                            yAxis: {
+                                name: 'Bandwidth: (GB/s)',
+                                type: 'value'
+                            },
+                            series: [
+                                {
+                                    id: 'test',
+                                    name: 'Adaptive-Bandwidth',
+                                    type: 'line',
+                                    smooth: true,
+                                    data: testAllocationData,
+                                },
+                                {
+                                    id: 'request',
+                                    name: 'Fixed-Bandwidth',
+                                    type: 'line',
+                                    smooth: true,
+                                    data: compareAllocationData,
+                                }
+                            ]
+                        };
+                        allocationChart.setOption(optionAllocation);
+
+                        function updateAllocationData() {
+                            $.ajax({
+                                type: 'GET',
+                                url: '/allocation/old',
+                                dataType: 'json',
+                                success: function (res) {
+                                    compareAllocationData.push(res.val)
+                                }
+                            });
+                            $.ajax({
+                                type: 'GET',
+                                url: '/allocation/fancy',
+                                dataType: 'json',
+                                success: function (res) {
+                                    testAllocationData.push(res.val)
+                                }
+                            });
+                            dateAllocation.push(lastAllocationTime);
+                            lastAllocationTime++;
+                            if (dateAllocation.length > maxAllocationLen) {
+                                dateAllocation.shift();
+                                testAllocationData.shift();
+                                compareAllocationData.shift();
+                            }
+                        }
+
+                        setInterval(function () {
+                            updateAllocationData();
+                            allocationChart.setOption(optionAllocation)
+                        }, 5000)
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h5>Adaptive-Bandwidth: Resource Consumption <span id="pym-resource" style="font-size:20px">0</span>, Task Completion <span id="pym-task" style="font-size:20px">10</span>%</h5>
+                    <h5>Fixed-Bandwidth: Resource Consumption <span id="fixed-resource" style="font-size:20px">0</span>, Task Completion <span id="fixed-task" style="font-size:20px">10</span>%</h5>
+                    <div id="resource-time" style="width: 100%;height:300px;"></div>
+                    <script type="text/javascript">
+                        var completionChart = echarts.init(document.getElementById('resource-time'));
+                        var last_fancy_data = [0, 0];
+                        var last_old_data = [0, 0];
+                        var fancy_data = [];
+                        var old_data = [];
+                        var maxXAxis = 100;
+                        var maxYAxis = 5;
+                        var axis = [
+                            [0, 5],
+                            [100, 0]
+                        ];
+                        var timeOption = {
+                            title: {
+                                text: 'Resource Consumption & Task Completion'
+                            },
+                            xAxis: {
+                                name: 'Usage: (GB)'
+                            },
+                            yAxis: {
+                                name: 'Task Completion'
+                            },
+                            legend: {
+                                data: ['Adaptive-Bandwidth', 'Fixed-Bandwidth']
+                            },
+                            series: [
+                                {
+                                    name: 'Adaptive-Bandwidth',
+                                    symbolSize: 0,
+                                    data: axis,
+                                    type: 'scatter',
+                                    markLine: {
+                                        data: fancy_data,
+                                        lineStyle: {
+                                            type: 'solid',
+                                            width: 2
+                                        }
+                                    }
+                                },
+                                {
+                                    symbolSize: 0,
+                                    name: 'Fixed-Bandwidth',
+                                    data: axis,
+                                    type: 'scatter',
+                                    markLine: {
+                                        data: old_data,
+                                        lineStyle: {
+                                            type: 'solid',
+                                            width: 2
+                                        }
+                                    }
+                                }
+                            ]
+                        };
+                        completionChart.setOption(timeOption);
+
+                        function updateCompletionData(which) {
+                            url = '/timecompletion/';
+                            url += which;
+                            $.ajax({
+                                type: 'GET',
+                                url: url,
+                                dataType: 'json',
+                                success: function (res) {
+                                    if (which === "old") {
+                                        console.log(res);
+                                        if (res.completion * 1.3 >= maxYAxis) {
+                                            maxYAxis = maxYAxis * 1.3;
+                                            axis.push([0, maxYAxis]);
+                                        }
+                                        if (res.resource_time * 1.3 >= maxXAxis) {
+                                            maxXAxis = maxXAxis * 1.3;
+                                            axis.push([maxXAxis, 0]);
+                                        }
+                                        var temp1 = [
+                                            {xAxis: last_old_data[0], yAxis: last_old_data[1], symbol: 'none'},
+                                            {xAxis: res.resource_time, yAxis: res.completion, symbol: 'none'}
+                                        ];
+                                        last_old_data = [res.resource_time, res.completion];
+                                        $("#fixed-resource").text(last_old_data[0]);
+                                        $("#fixed-task").text(last_old_data[1]);
+                                        old_data.push(temp1);
+                                    } else if (which === 'fancy') {
+                                        var temp2 = [
+                                            {xAxis: last_fancy_data[0], yAxis: last_fancy_data[1], symbol: 'none'},
+                                            {xAxis: res.resource_time, yAxis: res.completion, symbol: 'none'}
+                                        ];
+                                        last_fancy_data = [res.resource_time, res.completion];
+                                        fancy_data.push(temp2)
+                                        $("#pym-resource").text(last_fancy_data[0]);
+                                        $("#pym-task").text(last_fancy_data[1]);
+                                    }
+                                }
+                            });
+                        }
+
+                        setInterval(function () {
+                            updateCompletionData('old');
+                            updateCompletionData('fancy');
+                            completionChart.setOption(timeOption);
+                        }, 5000)
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div id="use-free" style="width: 100%;height:300px;"></div>
+                <script type="text/javascript">
+                    var useFreeChart = echarts.init(document.getElementById('use-free'));
+                    barSeries = [];
+                    for (var i = 0; i < 6; i++) {
+                        var barItemUse = {
+                            name: 'tidb-cluster-tikv-' + i + 'use',
+                            type: 'bar',
+                            barWith: 20,
+                            stack: 'tidb-cluster-tikv-' + i,
+                            data: [0, 0]
+                        };
+                        var barItemFree = {
+                            name: 'tidb-cluster-tikv-' + i + 'free',
+                            type: 'bar',
+                            barWith: 20,
+                            stack: 'tidb-cluster-tikv-' + i,
+                            itemStyle: {
+                                normal: {
+                                    color: '#ddd'
+                                }
+                            },
+                            data: [0, 0]
+                        };
+                        barSeries.push(barItemUse, barItemFree)
+                    }
+                    var useFreeOption = {
+                        title: {
+                            text: 'Bandwidth Limit & Usage'
+                        },
+                        grid: {
+                            left: '3%',
+                            right: '4%',
+                            bottom: '3%',
+                            containLabel: true
+                        },
+                        xAxis: [
+                            {
+                                type: 'category',
+                                data: ['Adaptive-Bandwidth', 'Fix-Bandwidth']
+                            }
+                        ],
+                        yAxis: [
+                            {
+                                name: 'Bandwidth (GB)',
+                                type: 'value'
+                            }
+                        ],
+                        series: barSeries,
+                    };
+
+                    function updateBar(which) {
+                        url = '/utilfree/';
+                        url += which;
+                        $.ajax({
+                            type: 'GET',
+                            url: url,
+                            dataType: 'json',
+                            success: function (res) {
+                                for (var i = 0; i < res.instances.length; i++) {
+                                    var name = res.instances[i].name;
+                                    var idStr = name.charAt(name.length - 1);
+                                    var id = parseInt(idStr);
+                                    var idUse = 2 * id;
+                                    var idFree = 2 * id + 1;
+                                    if (which === 'old') {
+                                        barSeries[idUse].data[1] = res.instances[i].use;
+                                        barSeries[idFree].data[1] = res.instances[i].free;
+                                    } else if (which === 'fancy') {
+                                        barSeries[idUse].data[0] = res.instances[i].use;
+                                        barSeries[idFree].data[0] = res.instances[i].free;
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    setInterval(function () {
+                        updateBar('fancy');
+                        updateBar('old');
+                        useFreeChart.setOption(useFreeOption);
+                    }, 5000)
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

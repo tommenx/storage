@@ -9,9 +9,4 @@ spec:
     plural: csinodeinfos
   scope: Cluster
   version: v1alpha1
-status:
-  acceptedNames:
-    kind: ""
-    plural: ""
-  conditions: null
-  storedVersions: null
+

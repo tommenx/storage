@@ -188,7 +188,7 @@ func (s *server) PutPodResource(ctx context.Context, req *cdpb.PutPodResourceReq
 		//	TODO 这里做简单处理，将pvc和pod的名字强绑定
 		//	TODO pod的名字:tidb-cluster-tikv-0，pvc则为: tikv-tidb-cluster-tikv-0
 		//	TODO 以后再慢慢改吧
-		volumeName, _ := s.pvc.GetVolumeName(namespace, fmt.Sprintf("lvm-volume-%s", pod))
+		volumeName, _ := s.pvc.GetVolumeName(namespace, fmt.Sprintf("tikv-%s", pod))
 		err = s.db.Put(ctx, fmt.Sprintf("%s%s", consts.KeyBounded, pod), []byte(volumeName))
 
 	} else {
@@ -350,11 +350,9 @@ func (s *server) PutStorageUtil(ctx context.Context, req *cdpb.PutStorageUtilReq
 	// /storage/check/pod-name 表示当前tikv使用存储的情况
 	// /storage/log/pod-name/time, val 表示与当前用量 表示pod-name 磁盘使用的历史记录
 	for podName, storageUtil := range req.Info {
-		t := time.Now().Unix()
-		err2 := s.db.Put(ctx, fmt.Sprintf("%s%s/%d", consts.KeyLog, podName, t), []byte(storageUtil))
 		err1 := s.db.Put(ctx, fmt.Sprintf("%s%s", consts.KeyCheck, podName), []byte(storageUtil))
-		if err1 != nil || err2 != nil {
-			glog.Errorf("put pod %s check error, err1=%v, err2=$v", podName, err1, err2)
+		if err1 != nil {
+			glog.Errorf("put pod %s check error, err1=%v", podName, err1)
 			resp.BaseResp.Code = 1
 			resp.BaseResp.Message = "put pod check error"
 			return resp, nil
@@ -363,4 +361,22 @@ func (s *server) PutStorageUtil(ctx context.Context, req *cdpb.PutStorageUtilReq
 	resp.BaseResp.Code = 0
 	resp.BaseResp.Message = "success"
 	return resp, nil
+}
+
+func (s *server) PutInstanceLimit(ctx context.Context, req *cdpb.PutInstanceLimitRequest) (*cdpb.PutInstanceLimitResponse, error) {
+	resp := &cdpb.PutInstanceLimitResponse{
+		BaseResp: &base.BaseResp{},
+	}
+	err := s.db.Put(ctx, fmt.Sprintf("%s%s", consts.KeyLimit, req.Name), []byte(req.Val))
+	if err != nil {
+		glog.Errorf("put instance %s error, err=%+v", req.Name, err)
+		resp.BaseResp.Code = 1
+		resp.BaseResp.Message = "put instance error"
+		return resp, nil
+	}
+	glog.Infof("set instance limit success")
+	resp.BaseResp.Code = 0
+	resp.BaseResp.Message = "success"
+	return resp, nil
+
 }

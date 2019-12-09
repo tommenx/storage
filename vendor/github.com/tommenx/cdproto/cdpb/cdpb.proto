@@ -144,6 +144,14 @@ message PutStorageUtilResponse {
     base.BaseResp base_resp = 255;
 }
 
+message PutInstanceLimitRequest {
+    string name = 1;
+    string val = 2;
+    base.Base base = 255;
+}
+message PutInstanceLimitResponse {
+    base.BaseResp base_resp = 255;
+}
 
 
 
@@ -156,6 +164,7 @@ service Coordinator {
     rpc GetVolume (GetVolumeRequest) returns (GetVolumeResponse);
     rpc GetAlivePod (GetAlivePodRequest) returns (GetAlivePodResponse);
     rpc PutStorageUtil(PutStorageUtilRequest) returns(PutStorageUtilResponse);
+    rpc PutInstanceLimit(PutInstanceLimitRequest) returns(PutInstanceLimitResponse);
 }
 
 

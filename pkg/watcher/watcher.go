@@ -58,7 +58,6 @@ func (w *watcher) reportIOutil(data map[string][]string) {
 			report[pod] = util[0] + "-" + util[1]
 		}
 	}
-	glog.Infof("get iostat log %+v", report)
 	if err := rpc.PutStorageUtil(ctx, report, w.nodeId); err != nil {
 		glog.Errorf("PutStorageUtil error, err=%+v", err)
 		return
